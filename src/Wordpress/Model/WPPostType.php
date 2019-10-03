@@ -42,10 +42,10 @@ class WPPostType
     {
         $this->name = $name;
 
-        if ($singular_name == null) {
+        if ($singular_name === null) {
             $singular_name = ucfirst($name);
         }
-        if ($plural_name == null) {
+        if ($plural_name === null) {
             $plural_name = ucfirst($name) . 's';
         }
         $this->labels = $this->defaultLabels($singular_name, $plural_name);

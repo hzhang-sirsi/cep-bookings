@@ -18,11 +18,10 @@ class RoomMetaboxProvider extends MetadataMetaboxProvider
     {
         parent::__construct($wordpressEvents, [
             new MetaboxFieldDefinition('location', 'Location', new SelectInput(function () {
-                $ret = [];
-                foreach (Wordpress::get_posts(new WP_Query(['post_type' => 'tribe_venue'])) as $post) {
-                    $ret[$post->ID] = $post->post_title;
-                }
-                return $ret;
+                return array_reduce(Wordpress::get_posts(new WP_Query(['post_type' => 'tribe_venue'])), function ($result, \WP_Post $post) {
+                    $result[$post->ID] = $post->post_title;
+                    return $result;
+                }, array());
             })),
             new MetaboxFieldDefinition('room_type', 'Room Type', 'select'),
             new MetaboxFieldDefinition('map', 'Map', 'Image'),

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace SirsiDynix\CEPVenuesAssets;
 
+use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPMenuPage;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Model\WPPostType;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Settings\WPSetting;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Settings\WPSettingsSection;
@@ -37,7 +38,7 @@ class Wordpress
             $section->id,
             $section->title,
             $section->labelWriter,
-            $section->page->name
+            $section->page->menu_slug
         );
     }
 
@@ -47,14 +48,14 @@ class Wordpress
             $setting->name,
             $setting->title,
             $setting->field,
-            $setting->section->page->name,
+            $setting->section->page->menu_slug,
             $setting->section->id
         );
     }
 
     public static function register_setting(WPSetting $setting)
     {
-        register_setting($setting->section->page->name, $setting->name);
+        register_setting($setting->section->page->menu_slug, $setting->name);
     }
 
     public static function get_option(string $option_name)
@@ -112,5 +113,9 @@ class Wordpress
 
     public static function wp_is_post_revision(int $post_id) {
         return wp_is_post_revision($post_id);
+    }
+
+    public static function add_menu_page(WPMenuPage $menuPage) {
+        return add_menu_page($menuPage->page_title, $menuPage->menu_title, $menuPage->capability, $menuPage->menu_slug, $menuPage->function, $menuPage->icon_url, $menuPage->position);
     }
 }

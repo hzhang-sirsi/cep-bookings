@@ -7,8 +7,15 @@ namespace SirsiDynix\CEPVenuesAssets;
 use DI\Container;
 use SirsiDynix\CEPVenuesAssets\Metabox\EquipmentMetaboxProvider;
 use SirsiDynix\CEPVenuesAssets\Metabox\RoomMetaboxProvider;
+use SirsiDynix\CEPVenuesAssets\Settings\Registration;
+use SirsiDynix\CEPVenuesAssets\Wordpress\Constants\MenuPosition;
+use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPMenuPage;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Model\WPPostType;
 use SirsiDynix\CEPVenuesAssets\Wordpress\WordpressEvents;
+use Windwalker\Dom\HtmlElement;
+use Windwalker\Html\Form\FormWrapper;
+use function DI\autowire;
+use function DI\get;
 
 class Plugin
 {
@@ -26,6 +33,21 @@ class Plugin
     private static function setup()
     {
         self::$container = new Container();
+        self::$container->set('SettingsPage', new WPMenuPage('CEP Venues and Assets', 'CEP Venues and Assets', 'manage_options',
+            'cep-venues-assets-settings', function () {
+                ob_start();
+                settings_fields('section');
+                do_settings_sections('cep-venues-assets-settings');
+                submit_button();
+                $formOutput = ob_get_clean();
+
+                echo new HtmlElement('div', [
+                    new HtmlElement('h1', 'CEP Venues and Assets'),
+                    new FormWrapper($formOutput, ['method' => 'post', 'action' => 'options.php'])
+                ], ['class' => 'wrap']);
+            }, null, MenuPosition::BELOW_SETTINGS));
+        self::$container->set(Registration::class, autowire()->constructorParameter('menuPage', get('SettingsPage')));
+
         self::$container->get(ECP\ECPIntegration::class)->registerHandlers();
         self::$container->get(WordpressEvents::class)->registerHandlers();
 
@@ -47,7 +69,10 @@ class Plugin
 
         $wpEvents = self::$container->get(WordpressEvents::class);
         $wpEvents->addHandler('admin_init', function () use ($container) {
-            $container->get(Settings\Registration::class)->settingsInit();
+            $container->get(Registration::class)->settingsInit();
+        });
+        $wpEvents->addHandler('admin_menu', function () use ($container) {
+            Wordpress::add_menu_page($container->get('SettingsPage'));
         });
         $wpEvents->addHandler('save_post', array(self::$container->get(RoomMetaboxProvider::class), 'savePostCallback'));
         $wpEvents->addHandler('save_post', array(self::$container->get(EquipmentMetaboxProvider::class), 'savePostCallback'));

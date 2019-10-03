@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPVenuesAssets\Wordpress\Settings;
 
 
+use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPMenuPage;
+
 /**
  * @property string id
  * @property string title
  * @property callable labelWriter
- * @property WPSettingsPage page
+ * @property WPMenuPage page
  */
 class WPSettingsSection
 {
@@ -18,9 +20,9 @@ class WPSettingsSection
      * @param string $id
      * @param string $title
      * @param callable $labelWriter
-     * @param WPSettingsPage $page
+     * @param WPMenuPage $page
      */
-    public function __construct(string $id, string $title, callable $labelWriter, WPSettingsPage $page)
+    public function __construct(string $id, string $title, callable $labelWriter, WPMenuPage $page)
     {
         $this->id = $id;
         $this->title = $title;

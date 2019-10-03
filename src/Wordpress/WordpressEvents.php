@@ -16,6 +16,7 @@ class WordpressEvents
     private const SUBSCRIBED_EVENTS = [
         'init',
         'admin_init',
+        'admin_menu',
         'plugins_loaded',
         'save_post',
     ];

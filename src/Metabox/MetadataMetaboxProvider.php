@@ -55,7 +55,7 @@ class MetadataMetaboxProvider
     }
 
     public function savePostCallback(int $post_id, WP_Post $post, bool $update = null) {
-        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || $post->post_type == 'revision') {
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || $post->post_type === 'revision') {
             return;
         }
         if ($parent_id = Wordpress::wp_is_post_revision($post_id)) {
@@ -73,7 +73,7 @@ class MetadataMetaboxProvider
     {
         if ($field->type != null && $field->type instanceof Input) {
             return $field->type->render($post, $field, $fieldId);
-        } elseif ($field->type == null || $field->type == 'text') {
+        } elseif ($field->type === null || $field->type === 'text') {
             return new InputElement('text', $field->name,
                 Wordpress::get_post_meta($post->ID, $field->name, true), ['id' => $fieldId, 'class' => 'code regular-text']);
         } else {
