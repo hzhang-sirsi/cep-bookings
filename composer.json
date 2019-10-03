@@ -1,0 +1,16 @@
+{
+    "require": {
+        "php-di/php-di": "^6.0",
+      "ext-json": "*",
+        "league/csv": "^9.1",
+        "windwalker/html": "^3.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "SirsiDynix\\CEPVenuesAssets\\": "src/"
+        }
+    }
+}
