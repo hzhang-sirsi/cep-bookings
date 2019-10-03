@@ -32,4 +32,20 @@ class MetaboxFieldDefinition
 
         $this->type = $type;
     }
+
+    /**
+     * @return string[]
+     */
+    public function getFields()
+    {
+        if ($this->type === null) {
+            return [];
+        }
+
+        if ($this->type instanceof Input) {
+            return $this->type->getFields($this->name);
+        }
+
+        return [$this->name];
+    }
 }

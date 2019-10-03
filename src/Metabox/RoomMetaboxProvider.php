@@ -5,6 +5,7 @@ namespace SirsiDynix\CEPVenuesAssets\Metabox;
 
 
 use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\SelectInput;
+use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\WeeklyAvailabilityInput;
 use SirsiDynix\CEPVenuesAssets\Wordpress;
 use WP_Post;
 use WP_Query;
@@ -31,7 +32,7 @@ class RoomMetaboxProvider extends MetadataMetaboxProvider
                 }, array());
             })),
             new MetaboxFieldDefinition('map', 'Map', 'Image'),
-            new MetaboxFieldDefinition('availability', 'Availability', 'Calendar Picker'),
+            new MetaboxFieldDefinition('availability', 'Availability', new WeeklyAvailabilityInput()),
         ]);
     }
 }

@@ -7,6 +7,7 @@ namespace SirsiDynix\CEPVenuesAssets\Metabox\Inputs;
 
 use SirsiDynix\CEPVenuesAssets\Metabox\MetaboxFieldDefinition;
 use SirsiDynix\CEPVenuesAssets\Wordpress;
+use Windwalker\Dom\DomElement;
 use Windwalker\Html\Option;
 use Windwalker\Html\Select\SelectList;
 use WP_Post;
@@ -29,7 +30,7 @@ class SelectInput implements Input
      * @param WP_Post $post
      * @param MetaboxFieldDefinition $field
      * @param string $fieldId
-     * @return SelectList
+     * @return DomElement
      */
     public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
     {
@@ -43,5 +44,14 @@ class SelectInput implements Input
         }
 
         return $root;
+    }
+
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public function getFields(string $field)
+    {
+        return [$field];
     }
 }

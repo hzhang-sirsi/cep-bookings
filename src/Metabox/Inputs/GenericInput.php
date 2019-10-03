@@ -6,6 +6,7 @@ namespace SirsiDynix\CEPVenuesAssets\Metabox\Inputs;
 
 
 use SirsiDynix\CEPVenuesAssets\Metabox\MetaboxFieldDefinition;
+use Windwalker\Dom\DomElement;
 use Windwalker\Html\Form\InputElement;
 use WP_Post;
 
@@ -34,10 +35,19 @@ class GenericInput implements Input
      * @param WP_Post $post
      * @param MetaboxFieldDefinition $field
      * @param string $fieldId
-     * @return InputElement
+     * @return DomElement
      */
     public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
     {
         return new InputElement($this->type, $field->name, call_user_func_array($this->value, [$post, $field]), ['id' => $fieldId, 'class' => 'code regular-text']);
+    }
+
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public function getFields(string $field)
+    {
+        return [$field];
     }
 }

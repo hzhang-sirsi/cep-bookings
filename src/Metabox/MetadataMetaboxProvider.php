@@ -27,7 +27,7 @@ class MetadataMetaboxProvider
      * @param Wordpress\WordpressEvents $events
      * @param MetaboxFieldDefinition[] $fields
      */
-    public function __construct(Wordpress\WordpressEvents $events, $fields)
+    public function __construct(Wordpress\WordpressEvents $events, array $fields)
     {
         $this->events = $events;
         $this->fields = $fields;
@@ -83,9 +83,11 @@ class MetadataMetaboxProvider
             $post_id = $parent_id;
         }
 
-        foreach ($this->fields as $field) {
-            if (array_key_exists($field->name, $_POST)) {
-                Wordpress::update_post_meta($post_id, $field->name, sanitize_text_field($_POST[$field->name]));
+        foreach ($this->fields as $fielddef) {
+            foreach ($fielddef->getFields() as $field) {
+                if (array_key_exists($field, $_POST)) {
+                    Wordpress::update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
+                }
             }
         }
     }

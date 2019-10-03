@@ -90,7 +90,13 @@ class Wordpress
         return $query->get_posts();
     }
 
-    public static function get_post_meta($post_id, $key = '', $single = false)
+    /**
+     * @param int $post_id
+     * @param string $key
+     * @param bool $single
+     * @return mixed
+     */
+    public static function get_post_meta(int $post_id, string $key = '', bool $single = false)
     {
         return get_post_meta($post_id, $key, $single);
     }
