@@ -25,14 +25,19 @@ class Wordpress
         return $wp_version;
     }
 
-    public static function add_action(string $event, $instance, string $function, int $priority = 10, int $nargs = 2): void
+    public static function add_action(string $event, $instance, string $function, int $priority = 10, int $nargs = 2)
     {
-        add_action($event, array($instance, $function), $priority, $nargs);
+        return add_action($event, array($instance, $function), $priority, $nargs);
     }
 
-    public static function add_action_fn(string $event, callable $function, int $priority = 10, int $nargs = 2): void
+    public static function add_action_fn(string $event, callable $function, int $priority = 10, int $nargs = 2)
     {
-        add_action($event, $function, $priority, $nargs);
+        return add_action($event, $function, $priority, $nargs);
+    }
+
+    public static function add_filter(string $tag, callable $function_to_add, int $priority = 10, $accepted_args = 1)
+    {
+        return add_filter($tag, $function_to_add, $priority, $accepted_args);
     }
 
     public static function add_settings_section(WPSettingsSection $section): void

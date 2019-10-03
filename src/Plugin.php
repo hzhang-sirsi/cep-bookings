@@ -78,6 +78,15 @@ class Plugin
         $wpEvents = self::$container->get(WordpressEvents::class);
         $wpEvents->addHandler('admin_init', function () use ($container) {
             $container->get(Registration::class)->settingsInit();
+
+            Wordpress::add_filter('manage_equipment_posts_columns', function ($columns) {
+                return array_merge(['thumbnail' => 'Thumbnail'], $columns);
+            }, 5);
+            Wordpress::add_action_fn('manage_posts_custom_column', function ($column_name, $id) {
+                if ($column_name === 'thumbnail') {
+                    echo get_the_post_thumbnail($id, 'thumbnail');
+                }
+            }, 5, 2);
         });
         $wpEvents->addHandler('admin_menu', function () use ($container) {
             $menuPage = $container->get('SettingsPage');

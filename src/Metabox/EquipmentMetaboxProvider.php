@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPVenuesAssets\Metabox;
 
 
+use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\GenericInput;
 use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\SelectInput;
 use SirsiDynix\CEPVenuesAssets\Wordpress;
 use WP_Post;
@@ -30,8 +31,9 @@ class EquipmentMetaboxProvider extends MetadataMetaboxProvider
                     return $result;
                 }, array());
             })),
-            new MetaboxFieldDefinition('equipment_image', 'Equipment Image', 'Image'),
-            new MetaboxFieldDefinition('quantity', 'Quantity'),
+            new MetaboxFieldDefinition('quantity', 'Quantity', new GenericInput('number', function (WP_Post $post, MetaboxFieldDefinition $field) {
+                return Wordpress::get_post_meta($post->ID, $field->name, true);
+            })),
             new MetaboxFieldDefinition('availability', 'Availability', 'Calendar Picker'),
         ]);
     }
