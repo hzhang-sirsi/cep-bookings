@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPVenuesAssets\Wordpress;
 
 
+use RuntimeException;
+
 class WordpressEventsDispatcher
 {
     /**
@@ -27,7 +29,7 @@ class WordpressEventsDispatcher
     public function addHandler(string $name, callable $handler)
     {
         if ($this->handlers[$name] === null) {
-            throw new \RuntimeException("Handler {$name} is not registered");
+            throw new RuntimeException("Handler {$name} is not registered");
         }
         array_push($this->handlers[$name], $handler);
     }

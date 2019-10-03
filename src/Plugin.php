@@ -10,6 +10,7 @@ use SirsiDynix\CEPVenuesAssets\Metabox\RoomMetaboxProvider;
 use SirsiDynix\CEPVenuesAssets\Settings\Registration;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Constants\MenuPosition;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPMenuPage;
+use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPSubMenuPage;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Model\WPPostType;
 use SirsiDynix\CEPVenuesAssets\Wordpress\WordpressEvents;
 use Windwalker\Dom\HtmlElement;
@@ -53,18 +54,25 @@ class Plugin
 
         $container = self::$container;
         self::$container->get(WordpressEvents::class)->addHandler('init', function () use ($container) {
-            $container->get(Wordpress::class)
-                ->register_post_type((new WPPostType('room'))
-                    ->setMenuIcon('dashicons-store')
-                    ->setSupports(['title', 'author', 'thumbnail'])
-                    ->setRegisterMetaBoxCb(array($container->get(RoomMetaboxProvider::class), 'metaboxCallback'))
-                );
-            $container->get(Wordpress::class)
-                ->register_post_type((new WPPostType('equipment', 'Equipment', 'Equipment'))
-                    ->setMenuIcon('dashicons-screenoptions')
-                    ->setSupports(['title', 'author', 'thumbnail'])
-                    ->setRegisterMetaBoxCb(array($container->get(EquipmentMetaboxProvider::class), 'metaboxCallback'))
-                );
+            Wordpress::register_post_type((new WPPostType('room_type', 'Room Type', 'Room Types'))
+                ->setSupports(['title'])
+                ->setShowInMenu(false)
+            );
+            Wordpress::register_post_type((new WPPostType('equipment_type', 'Equipment Type', 'Equipment Types'))
+                ->setSupports(['title'])
+                ->setShowInMenu(false)
+            );
+            Wordpress::register_post_type((new WPPostType('room'))
+                ->setMenuIcon('dashicons-store')
+                ->setSupports(['title', 'author', 'thumbnail'])
+                ->setRegisterMetaBoxCb(array($container->get(RoomMetaboxProvider::class), 'metaboxCallback'))
+            );
+            Wordpress::register_post_type((new WPPostType('equipment', 'Equipment', 'Equipment'))
+                ->setMenuIcon('dashicons-screenoptions')
+                ->setSupports(['title', 'author', 'thumbnail'])
+                ->setRegisterMetaBoxCb(array($container->get(EquipmentMetaboxProvider::class), 'metaboxCallback'))
+            );
+
         });
 
         $wpEvents = self::$container->get(WordpressEvents::class);
@@ -72,7 +80,13 @@ class Plugin
             $container->get(Registration::class)->settingsInit();
         });
         $wpEvents->addHandler('admin_menu', function () use ($container) {
-            Wordpress::add_menu_page($container->get('SettingsPage'));
+            $menuPage = $container->get('SettingsPage');
+            Wordpress::add_menu_page($menuPage);
+
+            Wordpress::add_sub_menu_page(new WPSubMenuPage('edit.php?post_type=room', 'Room Types', 'Room Types', 'edit_posts',
+                'edit.php?post_type=room_type'));
+            Wordpress::add_sub_menu_page(new WPSubMenuPage('edit.php?post_type=equipment', 'Equipment Types', 'Equipment Types', 'edit_posts',
+                'edit.php?post_type=equipment_type'));
         });
         $wpEvents->addHandler('save_post', array(self::$container->get(RoomMetaboxProvider::class), 'savePostCallback'));
         $wpEvents->addHandler('save_post', array(self::$container->get(EquipmentMetaboxProvider::class), 'savePostCallback'));

@@ -36,4 +36,17 @@ class WPMenuPage
         $this->icon_url = $icon_url;
         $this->position = $position;
     }
+
+    /**
+     * @param string $page_title
+     * @param string $menu_title
+     * @param string $capability
+     * @param string $menu_slug
+     * @param string|callable $function
+     * @return WPSubMenuPage
+     */
+    public function createSubPage(string $page_title, string $menu_title, string $capability, string $menu_slug, $function = '')
+    {
+        return new WPSubMenuPage($this, $page_title, $menu_title, $capability, $menu_slug, $function);
+    }
 }

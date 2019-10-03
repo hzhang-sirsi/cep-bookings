@@ -29,36 +29,9 @@ class ECPIntegration
 
     public function registerHandlers()
     {
-        $this->wordpressEvents->addHandler('plugins_loaded', function() {
+        $this->wordpressEvents->addHandler('plugins_loaded', function () {
             $this->initialized = $this->detectPlugins();
         });
-    }
-
-    public function getOptions()
-    {
-        /** @noinspection PhpUndefinedFunctionInspection */
-        return (array)tribe_get_option('custom-fields');
-    }
-
-    public function getPostType(): string
-    {
-        return $this->tribeMain::POSTTYPE;
-    }
-
-    public function getGCalLink(int $postId): string
-    {
-        return $this->tribeMain::instance()->googleCalendarLink();
-    }
-
-    public function getICalLink(int $postId): string
-    {
-        $postUrl = $this->tribeMain::instance()->getLink('single', Wordpress::get_post($postId));
-        return add_query_arg(array('ical' => 1), $postUrl);
-    }
-
-    public function getTaxonomyConstant()
-    {
-        return $this->tribeMain::instance()->get_event_taxonomy();
     }
 
     private function detectPlugins(): bool
@@ -98,5 +71,32 @@ class ECPIntegration
         }
 
         return version_compare($dependencyClass::VERSION, $minimumVersion, '>=');
+    }
+
+    public function getOptions()
+    {
+        /** @noinspection PhpUndefinedFunctionInspection */
+        return (array)tribe_get_option('custom-fields');
+    }
+
+    public function getPostType(): string
+    {
+        return $this->tribeMain::POSTTYPE;
+    }
+
+    public function getGCalLink(int $postId): string
+    {
+        return $this->tribeMain::instance()->googleCalendarLink();
+    }
+
+    public function getICalLink(int $postId): string
+    {
+        $postUrl = $this->tribeMain::instance()->getLink('single', Wordpress::get_post($postId));
+        return add_query_arg(array('ical' => 1), $postUrl);
+    }
+
+    public function getTaxonomyConstant()
+    {
+        return $this->tribeMain::instance()->get_event_taxonomy();
     }
 }

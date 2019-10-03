@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPVenuesAssets;
 
 use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPMenuPage;
+use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPSubMenuPage;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Model\WPPostType;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Settings\WPSetting;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Settings\WPSettingsSection;
@@ -12,12 +13,14 @@ use WP_Query;
 
 class Wordpress
 {
-    public static function is_installed(): bool {
+    public static function is_installed(): bool
+    {
         global $wp_version;
         return isset($wp_version);
     }
 
-    public static function version(): string {
+    public static function version(): string
+    {
         global $wp_version;
         return $wp_version;
     }
@@ -77,7 +80,8 @@ class Wordpress
      * @param WP_Query $query
      * @return WP_Post[]
      */
-    public static function get_posts(WP_Query $query) {
+    public static function get_posts(WP_Query $query)
+    {
         return $query->get_posts();
     }
 
@@ -111,11 +115,23 @@ class Wordpress
         return register_post_type($postType->name, $postType->getWpArgumentsArray());
     }
 
-    public static function wp_is_post_revision(int $post_id) {
+    public static function wp_is_post_revision(int $post_id)
+    {
         return wp_is_post_revision($post_id);
     }
 
-    public static function add_menu_page(WPMenuPage $menuPage) {
+    public static function add_menu_page(WPMenuPage $menuPage)
+    {
         return add_menu_page($menuPage->page_title, $menuPage->menu_title, $menuPage->capability, $menuPage->menu_slug, $menuPage->function, $menuPage->icon_url, $menuPage->position);
+    }
+
+    public static function add_sub_menu_page(WPSubMenuPage $subMenuPage)
+    {
+        $parentSlug = $subMenuPage->parent;
+        if (!is_string($parentSlug)) {
+            $parentSlug = $parentSlug->menu_slug;
+        }
+
+        return add_submenu_page($parentSlug, $subMenuPage->page_title, $subMenuPage->menu_title, $subMenuPage->capability, $subMenuPage->menu_slug, $subMenuPage->function);
     }
 }

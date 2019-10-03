@@ -54,21 +54,6 @@ class MetadataMetaboxProvider
         }, $post->post_type);
     }
 
-    public function savePostCallback(int $post_id, WP_Post $post, bool $update = null) {
-        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || $post->post_type === 'revision') {
-            return;
-        }
-        if ($parent_id = Wordpress::wp_is_post_revision($post_id)) {
-            $post_id = $parent_id;
-        }
-
-        foreach ($this->fields as $field) {
-            if (array_key_exists($field->name, $_POST)) {
-                Wordpress::update_post_meta($post_id, $field->name, sanitize_text_field($_POST[$field->name]));
-            }
-        }
-    }
-
     private function resolveType(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
     {
         if ($field->type != null && $field->type instanceof Input) {
@@ -86,6 +71,22 @@ class MetadataMetaboxProvider
                     'class' => 'code regular-text',
                 ]
             );
+        }
+    }
+
+    public function savePostCallback(int $post_id, WP_Post $post, bool $update = null)
+    {
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || $post->post_type === 'revision') {
+            return;
+        }
+        if ($parent_id = Wordpress::wp_is_post_revision($post_id)) {
+            $post_id = $parent_id;
+        }
+
+        foreach ($this->fields as $field) {
+            if (array_key_exists($field->name, $_POST)) {
+                Wordpress::update_post_meta($post_id, $field->name, sanitize_text_field($_POST[$field->name]));
+            }
         }
     }
 }
