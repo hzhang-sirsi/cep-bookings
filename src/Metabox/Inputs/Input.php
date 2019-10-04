@@ -24,4 +24,10 @@ interface Input
      * @return string[] Fieldnames to store
      */
     public function getFields(string $field);
+
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public function getArrayFields(string $field);
 }

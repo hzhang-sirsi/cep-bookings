@@ -33,7 +33,7 @@ class EquipmentMetaboxProvider extends MetadataMetaboxProvider
                 }, array());
             })),
             new MetaboxFieldDefinition('quantity', 'Quantity', new GenericInput('number', function (WP_Post $post, MetaboxFieldDefinition $field) {
-                return Wordpress::get_post_meta($post->ID, $field->name, true);
+                return $post->{$field->name};
             })),
             new MetaboxFieldDefinition('availability', 'Availability', new WeeklyAvailabilityInput()),
         ]);

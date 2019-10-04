@@ -90,21 +90,6 @@ class Wordpress
         return $query->get_posts();
     }
 
-    /**
-     * @param int $post_id
-     * @param string $key
-     * @param bool $single
-     * @return mixed
-     */
-    public static function get_post_meta(int $post_id, string $key = '', bool $single = false)
-    {
-        return get_post_meta($post_id, $key, $single);
-    }
-
-    public static function add_post_meta(int $post_id, string $key, string $value, bool $unique = false)
-    {
-        return add_post_meta($post_id, $key, $value, $unique);
-    }
 
     public static function update_post_meta(int $post_id, string $key, string $value, string $prev = null)
     {

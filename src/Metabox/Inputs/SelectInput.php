@@ -36,7 +36,7 @@ class SelectInput implements Input
     {
         $root = new SelectList($field->name, [
             new Option('Select...', '')
-        ], ['id' => $fieldId, 'class' => 'code regular-text'], Wordpress::get_post_meta($post->ID, $field->name, true), false);
+        ], ['id' => $fieldId, 'class' => 'code regular-text'], $post->{$field->name}, false);
         $elements = call_user_func_array($this->elements, [$post]);
 
         foreach ($elements as $value => $label) {
@@ -53,5 +53,14 @@ class SelectInput implements Input
     public function getFields(string $field)
     {
         return [$field];
+    }
+
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public function getArrayFields(string $field)
+    {
+        return [];
     }
 }

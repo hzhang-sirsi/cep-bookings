@@ -60,10 +60,10 @@ class MetadataMetaboxProvider
             return $field->type->render($post, $field, $fieldId);
         } elseif ($field->type === null || $field->type === 'text') {
             return new InputElement('text', $field->name,
-                Wordpress::get_post_meta($post->ID, $field->name, true), ['id' => $fieldId, 'class' => 'code regular-text']);
+                $post->{$field->name}, ['id' => $fieldId, 'class' => 'code regular-text']);
         } else {
             return new InputElement('text', $field->name,
-                Wordpress::get_post_meta($post->ID, $field->name, true),
+                $post->{$field->name},
                 [
                     'disabled' => 'disabled',
                     'placeholder' => 'Placeholder {' . $field->type . '}',
@@ -76,17 +76,35 @@ class MetadataMetaboxProvider
 
     public function savePostCallback(int $post_id, WP_Post $post, bool $update = null)
     {
-        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || $post->post_type === 'revision') {
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || $post->post_type === 'revision' || wp_is_post_autosave($post_id) || (defined( 'DOING_AJAX' ) && DOING_AJAX)) {
             return;
         }
         if ($parent_id = Wordpress::wp_is_post_revision($post_id)) {
             $post_id = $parent_id;
         }
 
+        $processField = function(WP_Post $post, string $field, $value) {
+            if (is_array($value)) {
+                $value = join(' ', array_map('sanitize_text_field', $value));
+            }
+            else {
+                $value = sanitize_text_field($value);
+            }
+            Wordpress::update_post_meta($post->ID, $field, $value);
+        };
+
         foreach ($this->fields as $fielddef) {
             foreach ($fielddef->getFields() as $field) {
                 if (array_key_exists($field, $_POST)) {
-                    Wordpress::update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
+                    $processField($post, $field, $_POST[$field]);
+                }
+            }
+
+            foreach ($fielddef->getArrayFields() as $field) {
+                if (array_key_exists($field, $_POST)) {
+                    $processField($post, $field, $_POST[$field]);
+                } elseif (isset($post->$field)) {
+                    Wordpress::update_post_meta($post_id, $field, '');
                 }
             }
         }

@@ -48,4 +48,16 @@ class MetaboxFieldDefinition
 
         return [$this->name];
     }
+
+    /**
+     * @return string[]
+     */
+    public function getArrayFields()
+    {
+        if ($this->type === null || !($this->type instanceof Input)) {
+            return [];
+        }
+
+        return $this->type->getArrayFields($this->name);
+    }
 }

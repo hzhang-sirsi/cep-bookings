@@ -50,4 +50,13 @@ class GenericInput implements Input
     {
         return [$field];
     }
+
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public function getArrayFields(string $field)
+    {
+        return [];
+    }
 }
