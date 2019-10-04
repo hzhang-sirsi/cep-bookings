@@ -95,7 +95,7 @@ class WeeklyAvailabilityInput implements Input
         }
 
         return new HtmlElement('div', [
-            new HtmlElement('style', [WEEKLY_AVAILABILITY_STYLES]),
+            new HtmlElement('style', WEEKLY_AVAILABILITY_STYLES),
             new CheckboxList($name, [
                 new Option('S', 'sunday'),
                 new Option('M', 'monday'),

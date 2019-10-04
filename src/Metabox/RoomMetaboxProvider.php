@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPVenuesAssets\Metabox;
 
 
+use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\MediaGalleryPicker;
 use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\SelectInput;
 use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\WeeklyAvailabilityInput;
 use SirsiDynix\CEPVenuesAssets\Wordpress;
@@ -31,7 +32,7 @@ class RoomMetaboxProvider extends MetadataMetaboxProvider
                     return $result;
                 }, array());
             })),
-            new MetaboxFieldDefinition('map', 'Map', 'Image'),
+            new MetaboxFieldDefinition('map', 'Map', new MediaGalleryPicker()),
             new MetaboxFieldDefinition('availability', 'Availability', new WeeklyAvailabilityInput()),
         ]);
     }
