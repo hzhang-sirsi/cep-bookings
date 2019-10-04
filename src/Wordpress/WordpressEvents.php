@@ -19,6 +19,7 @@ class WordpressEvents
         'admin_menu',
         'plugins_loaded',
         'save_post',
+        'wp_insert_post_empty_content',
     ];
 
     /**
@@ -32,19 +33,31 @@ class WordpressEvents
     public function registerHandlers()
     {
         foreach (self::SUBSCRIBED_EVENTS as $eventName) {
-            Wordpress::add_action_fn($eventName, $this->dispatch($eventName));
+            foreach ($this->proxy->getPriorities($eventName) as $priority) {
+                Wordpress::add_action_fn($eventName, $this->dispatch($eventName, $priority), $priority);
+            }
         }
     }
 
-    private function dispatch($eventName)
+    /**
+     * @param $eventName
+     * @param $priority
+     * @return \Closure
+     */
+    private function dispatch(string $eventName, $priority)
     {
-        return function (...$params) use ($eventName) {
-            $this->proxy->dispatch($eventName, $params);
+        return function (...$params) use ($eventName, $priority) {
+            $this->proxy->dispatch($eventName, $priority, $params);
         };
     }
 
-    public function addHandler(string $eventName, callable $handler)
+    public function addHandler(string $eventName, callable $handler, int $priority = null)
     {
-        $this->proxy->addHandler($eventName, $handler);
+        if ($priority === null) {
+            $this->proxy->addHandler($eventName, $handler);
+            return;
+        }
+
+        $this->proxy->addHandler($eventName, $handler, $priority);
     }
 }

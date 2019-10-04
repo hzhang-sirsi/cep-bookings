@@ -50,7 +50,6 @@ class Plugin
         self::$container->set(Registration::class, autowire()->constructorParameter('menuPage', get('SettingsPage')));
 
         self::$container->get(ECP\ECPIntegration::class)->registerHandlers();
-        self::$container->get(WordpressEvents::class)->registerHandlers();
 
         $container = self::$container;
         self::$container->get(WordpressEvents::class)->addHandler('init', function () use ($container) {
@@ -72,7 +71,6 @@ class Plugin
                 ->setSupports(['title', 'author', 'thumbnail'])
                 ->setRegisterMetaBoxCb(array($container->get(EquipmentMetaboxProvider::class), 'metaboxCallback'))
             );
-
         });
 
         $wpEvents = self::$container->get(WordpressEvents::class);
@@ -99,6 +97,8 @@ class Plugin
         });
         $wpEvents->addHandler('save_post', array(self::$container->get(RoomMetaboxProvider::class), 'savePostCallback'));
         $wpEvents->addHandler('save_post', array(self::$container->get(EquipmentMetaboxProvider::class), 'savePostCallback'));
+
+        self::$container->get(WordpressEvents::class)->registerHandlers();
     }
 
     public static function destroy($network): bool

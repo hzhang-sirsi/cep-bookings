@@ -10,7 +10,7 @@ use RuntimeException;
 class WordpressEventsDispatcher
 {
     /**
-     * @var callable[][]
+     * @var callable[int][string]
      */
     private $handlers;
 
@@ -26,18 +26,26 @@ class WordpressEventsDispatcher
         }
     }
 
-    public function addHandler(string $name, callable $handler)
+    public function addHandler(string $name, callable $handler, int $priority = 10)
     {
-        if ($this->handlers[$name] === null) {
+        if (!array_key_exists($name, $this->handlers) || $this->handlers[$name] === null) {
             throw new RuntimeException("Handler {$name} is not registered");
         }
-        array_push($this->handlers[$name], $handler);
+
+        if (!array_key_exists($priority, $this->handlers[$name])) {
+            $this->handlers[$name][$priority] = [];
+        }
+        array_push($this->handlers[$name][$priority], $handler);
     }
 
-    public function dispatch($name, $arguments)
+    public function dispatch(string $name, int $priority, array $arguments)
     {
-        foreach ($this->handlers[$name] as $handler) {
+        foreach ($this->handlers[$name][$priority] as $handler) {
             $handler(...$arguments);
         }
+    }
+
+    public function getPriorities(string $name) {
+        return array_keys($this->handlers[$name]);
     }
 }
