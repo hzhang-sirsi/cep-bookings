@@ -6,13 +6,39 @@ namespace SirsiDynix\CEPVenuesAssets\Metabox\Inputs;
 
 
 use SirsiDynix\CEPVenuesAssets\Metabox\MetaboxFieldDefinition;
-use SirsiDynix\CEPVenuesAssets\Wordpress;
 use Windwalker\Dom\DomElement;
 use Windwalker\Dom\HtmlElement;
 use Windwalker\Html\Form\InputElement;
 use Windwalker\Html\Option;
 use Windwalker\Html\Select\CheckboxList;
 use WP_Post;
+
+const WEEKLY_AVAILABILITY_STYLES = <<<'TAG'
+.day-field-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.day-field-container label {
+    height: 25px;
+    width: 25px;
+    text-align: center;
+    margin: 2px;
+    padding: 2px;
+    background-color: #eee;
+}
+
+.day-field-container label:hover {
+    background-color: #ccc;
+}
+
+.day-field-container input:checked + label {
+    background-color: #2196F3;
+}
+TAG;
 
 /**
  * @property string $type
@@ -64,40 +90,12 @@ class WeeklyAvailabilityInput implements Input
 
         if (!isset($post->$name)) {
             $value = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-        }
-        else {
+        } else {
             $value = explode(' ', $post->$name);
         }
 
         return new HtmlElement('div', [
-            new HtmlElement('style', [
-                <<<'TAG'
-.day-field-container input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-}
-
-.day-field-container label {
-    height: 25px;
-    width: 25px;
-    text-align: center;
-    margin: 2px;
-    padding: 2px;
-    background-color: #eee;
-}
-
-.day-field-container label:hover {
-    background-color: #ccc;
-}
-
-.day-field-container input:checked + label {
-    background-color: #2196F3;
-}
-TAG
-            ]),
+            new HtmlElement('style', [WEEKLY_AVAILABILITY_STYLES]),
             new CheckboxList($name, [
                 new Option('S', 'sunday'),
                 new Option('M', 'monday'),

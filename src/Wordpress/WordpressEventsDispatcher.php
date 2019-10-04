@@ -45,7 +45,8 @@ class WordpressEventsDispatcher
         }
     }
 
-    public function getPriorities(string $name) {
+    public function getPriorities(string $name)
+    {
         return array_keys($this->handlers[$name]);
     }
 }

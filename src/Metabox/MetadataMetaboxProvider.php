@@ -76,18 +76,17 @@ class MetadataMetaboxProvider
 
     public function savePostCallback(int $post_id, WP_Post $post, bool $update = null)
     {
-        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || $post->post_type === 'revision' || wp_is_post_autosave($post_id) || (defined( 'DOING_AJAX' ) && DOING_AJAX)) {
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || $post->post_type === 'revision' || wp_is_post_autosave($post_id) || (defined('DOING_AJAX') && DOING_AJAX)) {
             return;
         }
         if ($parent_id = Wordpress::wp_is_post_revision($post_id)) {
             $post_id = $parent_id;
         }
 
-        $processField = function(WP_Post $post, string $field, $value) {
+        $processField = function (WP_Post $post, string $field, $value) {
             if (is_array($value)) {
                 $value = join(' ', array_map('sanitize_text_field', $value));
-            }
-            else {
+            } else {
                 $value = sanitize_text_field($value);
             }
             Wordpress::update_post_meta($post->ID, $field, $value);
