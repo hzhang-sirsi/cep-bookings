@@ -126,7 +126,8 @@ class Wordpress
         return add_submenu_page($parentSlug, $subMenuPage->page_title, $subMenuPage->menu_title, $subMenuPage->capability, $subMenuPage->menu_slug, $subMenuPage->function);
     }
 
-    public function wp_enqueue_script($handle, $src = '', $deps = array(), $ver = false, $in_footer = false) {
+    public function wp_enqueue_script($handle, $src = '', $deps = array(), $ver = false, $in_footer = false)
+    {
         return wp_enqueue_script($handle, $src, $deps, $ver, $in_footer);
     }
 
@@ -138,5 +139,13 @@ class Wordpress
     public function wp_get_attachment_metadata($attachment_id = 0, $unfiltered = false)
     {
         return wp_get_attachment_metadata($attachment_id, $unfiltered);
+    }
+
+    public function plugins_url(string $path, string $plugin_url = null)
+    {
+        if ($plugin_url === null) {
+            $plugin_url = Plugin::getRoot();
+        }
+        return plugins_url($path, $plugin_url);
     }
 }

@@ -6,7 +6,6 @@ namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
 use SirsiDynix\CEPBookings\Metabox\MetaboxFieldDefinition;
-use SirsiDynix\CEPBookings\Plugin;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\DomElement;
 use Windwalker\Dom\HtmlElement;
@@ -43,7 +42,7 @@ class MediaGalleryPicker implements Input
     public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
     {
         $this->wordpress->wp_enqueue_media();
-        $this->wordpress->wp_enqueue_script('media-gallery-picker', Plugin::getRoot() . '/static/js/media-gallery-picker.js');
+        $this->wordpress->wp_enqueue_script('media-gallery-picker', $this->wordpress->plugins_url('/static/js/media-gallery-picker.js'));
 
         $imageMeta = $this->wordpress->wp_get_attachment_metadata($post->{$field->name . '_imageId'});
         if ($imageMeta) {

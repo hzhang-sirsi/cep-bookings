@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox;
 
 
+use Closure;
 use SirsiDynix\CEPBookings\Metabox\Inputs\Input;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\HtmlElement;
@@ -39,25 +40,39 @@ class MetadataMetaboxProvider
         $this->fields = $fields;
     }
 
-    public function metaboxCallback(WP_Post $post)
+    /**
+     * @param string|WP_Post $postType
+     */
+    public function registerMetabox($postType)
     {
-        $rootElem = Grid::create([
-            'class' => 'form-table'
-        ])->setColumns(['key', 'value']);
-
-        foreach ($this->fields as $field) {
-            $rootElem->addRow();
-
-            $fieldId = 'input-cep-bookings-' . $field->name;
-            $rootElem->setRowCell('key', new HtmlElement('label', $field->friendlyName, [
-                'for' => $fieldId
-            ]));
-            $rootElem->setRowCell('value', $this->resolveType($post, $field, $fieldId));
+        if ($postType instanceof WP_Post) {
+            $postType = $postType->post_type;
         }
+        $this->wordpress->add_meta_box('meta-cep-bookings', 'CEP Bookings', $this->renderMetabox(), $postType);
+    }
 
-        $this->wordpress->add_meta_box('meta-cep-bookings', 'CEP Bookings', function () use ($rootElem) {
+    /**
+     * @return Closure
+     */
+    private function renderMetabox()
+    {
+        return function (WP_Post $post) {
+            $rootElem = Grid::create([
+                'class' => 'form-table'
+            ])->setColumns(['key', 'value']);
+
+            foreach ($this->fields as $field) {
+                $rootElem->addRow();
+
+                $fieldId = 'input-cep-bookings-' . $field->name;
+                $rootElem->setRowCell('key', new HtmlElement('label', $field->friendlyName, [
+                    'for' => $fieldId
+                ]));
+                $rootElem->setRowCell('value', $this->resolveType($post, $field, $fieldId));
+            }
+
             echo $rootElem;
-        }, $post->post_type);
+        };
     }
 
     private function resolveType(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)

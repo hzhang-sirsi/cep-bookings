@@ -5,12 +5,10 @@ namespace SirsiDynix\CEPBookings\Metabox;
 
 
 use SirsiDynix\CEPBookings\Metabox\Inputs\GenericInput;
-use SirsiDynix\CEPBookings\Metabox\Inputs\SelectInput;
 use SirsiDynix\CEPBookings\Metabox\Inputs\WeeklyAvailabilityInput;
 use SirsiDynix\CEPBookings\Metabox\Inputs\WPPostSelectInput;
 use SirsiDynix\CEPBookings\Wordpress;
 use WP_Post;
-use WP_Query;
 
 class EquipmentMetaboxProvider extends MetadataMetaboxProvider
 {
@@ -26,7 +24,7 @@ class EquipmentMetaboxProvider extends MetadataMetaboxProvider
             new MetaboxFieldDefinition('equipment_type', 'Equipment Type', new WPPostSelectInput($wordpress, 'equipment_type')),
             new MetaboxFieldDefinition('quantity', 'Quantity', new GenericInput('number', function (WP_Post $post, MetaboxFieldDefinition $field) {
                 return $post->{$field->name};
-            })),
+            }, ['min' => '0'])),
             new MetaboxFieldDefinition('availability', 'Availability', new WeeklyAvailabilityInput()),
         ]);
     }

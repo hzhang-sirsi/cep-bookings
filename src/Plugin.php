@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings;
 
 use DI\Container;
+use SirsiDynix\CEPBookings\ECP\ECPIntegration;
 use SirsiDynix\CEPBookings\Metabox\EquipmentMetaboxProvider;
+use SirsiDynix\CEPBookings\Metabox\EventsCalendarMetaboxProvider;
 use SirsiDynix\CEPBookings\Metabox\RoomMetaboxProvider;
 use SirsiDynix\CEPBookings\Settings\Registration;
 use SirsiDynix\CEPBookings\Wordpress\Constants\MenuPosition;
@@ -67,12 +69,12 @@ class Plugin
             $wordpress->register_post_type((new WPPostType('room'))
                 ->setMenuIcon('dashicons-store')
                 ->setSupports(['title', 'author', 'thumbnail'])
-                ->setRegisterMetaBoxCb(array($container->get(RoomMetaboxProvider::class), 'metaboxCallback'))
+                ->setRegisterMetaBoxCb(array($container->get(RoomMetaboxProvider::class), 'registerMetabox'))
             );
             $wordpress->register_post_type((new WPPostType('equipment', 'Equipment', 'Equipment'))
                 ->setMenuIcon('dashicons-screenoptions')
                 ->setSupports(['title', 'author', 'thumbnail'])
-                ->setRegisterMetaBoxCb(array($container->get(EquipmentMetaboxProvider::class), 'metaboxCallback'))
+                ->setRegisterMetaBoxCb(array($container->get(EquipmentMetaboxProvider::class), 'registerMetabox'))
             );
         });
 
@@ -88,6 +90,8 @@ class Plugin
                     echo get_the_post_thumbnail($id, 'thumbnail');
                 }
             }, 5, 2);
+
+            $container->get(EventsCalendarMetaboxProvider::class)->registerMetabox($container->get(ECPIntegration::class)->getEventsPostType());
         });
         $wpEvents->addHandler('admin_menu', function () use ($container, $wordpress) {
             $menuPage = $container->get('SettingsPage');

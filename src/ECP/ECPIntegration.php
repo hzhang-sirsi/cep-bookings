@@ -76,9 +76,14 @@ class ECPIntegration
         return (array)tribe_get_option('custom-fields');
     }
 
-    public function getPostType(): string
+    public function getEventsPostType(): string
     {
         return $this->tribeMain::POSTTYPE;
+    }
+
+    public function getVenuePostType(): string
+    {
+        return $this->tribeMain::VENUE_POST_TYPE;
     }
 
     public function getGCalLink(int $postId): string

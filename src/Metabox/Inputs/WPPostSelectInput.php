@@ -12,7 +12,9 @@ class WPPostSelectInput extends SelectInput
 {
     public function __construct(Wordpress $wordpress, string $postType)
     {
-        parent::__construct(function () use ($wordpress, $postType) { return $this->getOptions($wordpress, $postType); });
+        parent::__construct(function () use ($wordpress, $postType) {
+            return $this->getOptions($wordpress, $postType);
+        });
     }
 
     public function getOptions(Wordpress $wordpress, string $postType)
