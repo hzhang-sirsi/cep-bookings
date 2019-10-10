@@ -15,4 +15,4 @@ USER build:build
 COPY --chown=build:build . /opt/build/
 WORKDIR /opt/build
 
-RUN make && env/composer install && make build
+CMD ["bash", "-c", "make && env/composer install && make build && cp build/* /out"]
