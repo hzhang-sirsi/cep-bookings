@@ -6,7 +6,7 @@
         "windwalker/html": "^3.5"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.4"
+        "phpunit/phpunit": "^8.4"
     },
     "autoload": {
         "psr-4": {

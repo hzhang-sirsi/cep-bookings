@@ -1,14 +1,13 @@
 <?php
 declare(strict_types=1);
 
-use PHPUnit\Framework\TestCase;
-use SirsiDynix\CEPVenuesAssets\Plugin;
+namespace SirsiDynix\CEPVenuesAssets;
 
-final class PluginTest extends TestCase
+final class PluginTest extends BaseTestCase
 {
     public function testPluginInitialize(): void
     {
-        $this->assertTrue(Plugin::initialize());
+        $this->assertTrue(Plugin::initialize(GetBasePath() . '/cep-venues-assets.php'));
     }
 
     public function testPluginDestroy(): void

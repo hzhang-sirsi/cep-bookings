@@ -6,12 +6,9 @@ namespace SirsiDynix\CEPVenuesAssets\Metabox\Inputs;
 
 
 use SirsiDynix\CEPVenuesAssets\Metabox\MetaboxFieldDefinition;
-use SirsiDynix\CEPVenuesAssets\Wordpress;
 use Windwalker\Dom\DomElement;
 use Windwalker\Dom\HtmlElement;
 use Windwalker\Html\Form\InputElement;
-use Windwalker\Html\Option;
-use Windwalker\Html\Select\CheckboxList;
 use WP_Post;
 
 const CLIENT_SCRIPT = <<<'TAG'
@@ -82,8 +79,7 @@ class MediaGalleryPicker implements Input
         if ($imageMeta) {
             $width = $imageMeta['width'];
             $height = $imageMeta['height'];
-        }
-        else {
+        } else {
             $width = '';
             $height = '';
         }
@@ -91,9 +87,9 @@ class MediaGalleryPicker implements Input
         return new HtmlElement('div', [
             new HtmlElement('div', [
                 new HtmlElement('img', [], [
-                    'id' => 'image-preview',
-                    'src' => wp_get_attachment_image_src($post->{$field->name . '_imageId'}, 'thumbnail')[0],
-                    'style' => 'width: auto; max-width: 100%; height: 100%; max-height: 100%; object-fit: contain;']
+                        'id' => 'image-preview',
+                        'src' => wp_get_attachment_image_src($post->{$field->name . '_imageId'}, 'thumbnail')[0],
+                        'style' => 'width: auto; max-width: 100%; height: 100%; max-height: 100%; object-fit: contain;']
                 ),
             ], ['style' => 'flex-grow: 1; max-width: 200px; max-height: 150px;']),
             new HtmlElement('div', [

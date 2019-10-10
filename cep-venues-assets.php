@@ -8,9 +8,9 @@ Author URI: http://sirsidynix.com
 Text Domain: cep-venues-assets
 License: Proprietary
 */
+
 namespace SirsiDynix\CEPVenuesAssets;
 
-require __DIR__ . '/vendor/autoload.php';
-require __DIR__ . '/src/autoload.php';
+require __DIR__ . '/bootstrap.php';
 
 Plugin::initialize(__DIR__ . '/cep-venues-assets.php');

@@ -25,22 +25,17 @@ class Wordpress
         return $wp_version;
     }
 
-    public static function add_action(string $event, $instance, string $function, int $priority = 10, int $nargs = 2)
-    {
-        return add_action($event, array($instance, $function), $priority, $nargs);
-    }
-
-    public static function add_action_fn(string $event, callable $function, int $priority = 10, int $nargs = 2)
+    public function add_action(string $event, callable $function, int $priority = 10, int $nargs = 2)
     {
         return add_action($event, $function, $priority, $nargs);
     }
 
-    public static function add_filter(string $tag, callable $function_to_add, int $priority = 10, $accepted_args = 1)
+    public function add_filter(string $tag, callable $function_to_add, int $priority = 10, $accepted_args = 1)
     {
         return add_filter($tag, $function_to_add, $priority, $accepted_args);
     }
 
-    public static function add_settings_section(WPSettingsSection $section): void
+    public function add_settings_section(WPSettingsSection $section): void
     {
         add_settings_section(
             $section->id,
@@ -50,7 +45,7 @@ class Wordpress
         );
     }
 
-    public static function add_settings_field(WPSetting $setting): void
+    public function add_settings_field(WPSetting $setting): void
     {
         add_settings_field(
             $setting->name,
@@ -61,22 +56,22 @@ class Wordpress
         );
     }
 
-    public static function register_setting(WPSetting $setting)
+    public function register_setting(WPSetting $setting)
     {
         register_setting($setting->section->page->menu_slug, $setting->name);
     }
 
-    public static function get_option(string $option_name)
+    public function get_option(string $option_name)
     {
         return get_option($option_name);
     }
 
-    public static function add_meta_box(string $id, string $title, callable $callback, $screen)
+    public function add_meta_box(string $id, string $title, callable $callback, $screen)
     {
         return add_meta_box($id, $title, $callback, $screen);
     }
 
-    public static function get_post($post = null, string $output = OBJECT, string $filter = 'raw')
+    public function get_post($post = null, string $output = 'OBJECT', string $filter = 'raw')
     {
         return get_post($post, $output, $filter);
     }
@@ -85,43 +80,43 @@ class Wordpress
      * @param WP_Query $query
      * @return WP_Post[]
      */
-    public static function get_posts(WP_Query $query)
+    public function get_posts(WP_Query $query)
     {
         return $query->get_posts();
     }
 
 
-    public static function update_post_meta(int $post_id, string $key, string $value, string $prev = null)
+    public function update_post_meta(int $post_id, string $key, string $value, string $prev = null)
     {
         return update_post_meta($post_id, $key, $value, $prev);
     }
 
-    public static function register_rest_route(string $namespace, string $route, array $args = array(), bool $override = false)
+    public function register_rest_route(string $namespace, string $route, array $args = array(), bool $override = false)
     {
         return register_rest_route($namespace, $route, $args, $override);
     }
 
-    public static function get_the_terms($post_id, $taxonomy)
+    public function get_the_terms($post_id, $taxonomy)
     {
         return get_the_terms($post_id, $taxonomy);
     }
 
-    public static function register_post_type(WPPostType $postType)
+    public function register_post_type(WPPostType $postType)
     {
         return register_post_type($postType->name, $postType->getWpArgumentsArray());
     }
 
-    public static function wp_is_post_revision(int $post_id)
+    public function wp_is_post_revision(int $post_id)
     {
         return wp_is_post_revision($post_id);
     }
 
-    public static function add_menu_page(WPMenuPage $menuPage)
+    public function add_menu_page(WPMenuPage $menuPage)
     {
         return add_menu_page($menuPage->page_title, $menuPage->menu_title, $menuPage->capability, $menuPage->menu_slug, $menuPage->function, $menuPage->icon_url, $menuPage->position);
     }
 
-    public static function add_sub_menu_page(WPSubMenuPage $subMenuPage)
+    public function add_sub_menu_page(WPSubMenuPage $subMenuPage)
     {
         $parentSlug = $subMenuPage->parent;
         if (!is_string($parentSlug)) {
