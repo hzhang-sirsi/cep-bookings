@@ -148,4 +148,9 @@ class Wordpress
         }
         return plugins_url($path, $plugin_url);
     }
+
+    public function get_current_screen()
+    {
+        return get_current_screen();
+    }
 }
