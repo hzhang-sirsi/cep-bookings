@@ -12,7 +12,6 @@ use Windwalker\Html\Grid\Grid;
 use WP_Post;
 
 /**
- * @property Wordpress wordpress
  * @property MetaboxFieldDefinition[] fields
  */
 class MetadataMetaboxProvider
@@ -23,12 +22,19 @@ class MetadataMetaboxProvider
     private $events;
 
     /**
+     * @var Wordpress
+     */
+    private $wordpress;
+
+    /**
      * MetadataMetaboxProvider constructor.
+     * @param Wordpress $wordpress
      * @param Wordpress\WordpressEvents $events
      * @param MetaboxFieldDefinition[] $fields
      */
-    public function __construct(Wordpress\WordpressEvents $events, array $fields)
+    public function __construct(Wordpress $wordpress, Wordpress\WordpressEvents $events, array $fields)
     {
+        $this->wordpress = $wordpress;
         $this->events = $events;
         $this->fields = $fields;
     }
@@ -49,7 +55,7 @@ class MetadataMetaboxProvider
             $rootElem->setRowCell('value', $this->resolveType($post, $field, $fieldId));
         }
 
-        Wordpress::add_meta_box('meta-cep-venues-assets', 'CEP Venues and Assets', function ($post) use ($rootElem) {
+        $this->wordpress->add_meta_box('meta-cep-venues-assets', 'CEP Venues and Assets', function () use ($rootElem) {
             echo $rootElem;
         }, $post->post_type);
     }
@@ -79,7 +85,7 @@ class MetadataMetaboxProvider
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || $post->post_type === 'revision' || wp_is_post_autosave($post_id) || (defined('DOING_AJAX') && DOING_AJAX)) {
             return;
         }
-        if ($parent_id = Wordpress::wp_is_post_revision($post_id)) {
+        if ($parent_id = $this->wordpress->wp_is_post_revision($post_id)) {
             $post_id = $parent_id;
         }
 
@@ -89,7 +95,7 @@ class MetadataMetaboxProvider
             } else {
                 $value = sanitize_text_field($value);
             }
-            Wordpress::update_post_meta($post->ID, $field, $value);
+            $this->wordpress->update_post_meta($post->ID, $field, $value);
         };
 
         foreach ($this->fields as $fielddef) {
@@ -103,7 +109,7 @@ class MetadataMetaboxProvider
                 if (array_key_exists($field, $_POST)) {
                     $processField($post, $field, $_POST[$field]);
                 } elseif (isset($post->$field)) {
-                    Wordpress::update_post_meta($post_id, $field, '');
+                    $this->wordpress->update_post_meta($post_id, $field, '');
                 }
             }
         }

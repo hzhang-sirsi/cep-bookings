@@ -117,7 +117,7 @@ class Plugin
         return true;
     }
 
-    public function getRoot(): string
+    public static function getRoot(): string
     {
         return self::$rootPath;
     }

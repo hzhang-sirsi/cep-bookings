@@ -125,4 +125,18 @@ class Wordpress
 
         return add_submenu_page($parentSlug, $subMenuPage->page_title, $subMenuPage->menu_title, $subMenuPage->capability, $subMenuPage->menu_slug, $subMenuPage->function);
     }
+
+    public function wp_enqueue_script($handle, $src = '', $deps = array(), $ver = false, $in_footer = false) {
+        return wp_enqueue_script($handle, $src, $deps, $ver, $in_footer);
+    }
+
+    public function wp_enqueue_media()
+    {
+        return wp_enqueue_media();
+    }
+
+    public function wp_get_attachment_metadata($attachment_id = 0, $unfiltered = false)
+    {
+        return wp_get_attachment_metadata($attachment_id, $unfiltered);
+    }
 }

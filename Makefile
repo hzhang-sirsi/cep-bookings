@@ -14,7 +14,10 @@ vendor: composer
 	env/composer install
 
 test: vendor
-	./vendor/phpunit/phpunit/phpunit test
+	./vendor/bin/phpunit test
+
+lint: vendor
+	./vendor/bin/phplint
 
 builddir:
 	@mkdir -p build
