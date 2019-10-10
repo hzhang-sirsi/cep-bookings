@@ -37,7 +37,7 @@ class Plugin
     private static function setup()
     {
         $container = self::getContainer();
-        self::$container->set('SettingsPage', new WPMenuPage('CEP Venues and Assets', 'CEP Venues and Assets', 'manage_options',
+        $container->set('SettingsPage', new WPMenuPage('CEP Venues and Assets', 'CEP Venues and Assets', 'manage_options',
             'cep-venues-assets-settings', function () {
                 $formOutput = Utils::captureAsString(function () {
                     settings_fields('section');
@@ -50,11 +50,10 @@ class Plugin
                     new FormWrapper($formOutput, ['method' => 'post', 'action' => 'options.php'])
                 ], ['class' => 'wrap']);
             }, null, MenuPosition::BELOW_SETTINGS));
-        self::$container->set(Registration::class, autowire()->constructorParameter('menuPage', get('SettingsPage')));
+        $container->set(Registration::class, autowire()->constructorParameter('menuPage', get('SettingsPage')));
 
-        self::$container->get(ECP\ECPIntegration::class)->registerHandlers();
+        $container->get(ECP\ECPIntegration::class)->registerHandlers();
 
-        $container = self::$container;
         $wordpress = self::$container->get(Wordpress::class);
         self::$container->get(WordpressEvents::class)->addHandler('init', function () use ($container, $wordpress) {
             $wordpress->register_post_type((new WPPostType('room_type', 'Room Type', 'Room Types'))

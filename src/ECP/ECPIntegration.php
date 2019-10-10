@@ -17,13 +17,20 @@ class ECPIntegration
     private $tribeMain;
     private $tribeEventsPro;
 
+
+    /**
+     * @var Wordpress
+     */
+    private $wordpress;
+
     /**
      * @var Wordpress\WordpressEvents
      */
     private $wordpressEvents;
 
-    public function __construct(Wordpress\WordpressEvents $wordpressEvents)
+    public function __construct(Wordpress $wordpress, Wordpress\WordpressEvents $wordpressEvents)
     {
+        $this->wordpress = $wordpress;
         $this->wordpressEvents = $wordpressEvents;
     }
 
@@ -46,16 +53,6 @@ class ECPIntegration
 
         $this->tribeMain = Tribe__Events__Main::class;
         $this->tribeEventsPro = Tribe__Events__Pro__Main::class;
-
-        add_filter('tribe_get_event_link', function ($link, $postId) {
-            /** @noinspection PhpUndefinedFunctionInspection */
-            $website_url = tribe_get_event_website_url($postId);
-            // Only swaps link if set
-            if (!empty($website_url)) {
-                $link = $website_url;
-            }
-            return $link;
-        }, 100, 2);
 
         return true;
     }
@@ -91,7 +88,7 @@ class ECPIntegration
 
     public function getICalLink(int $postId): string
     {
-        $postUrl = $this->tribeMain::instance()->getLink('single', Wordpress::get_post($postId));
+        $postUrl = $this->tribeMain::instance()->getLink('single', $this->wordpress->get_post($postId));
         return add_query_arg(array('ical' => 1), $postUrl);
     }
 

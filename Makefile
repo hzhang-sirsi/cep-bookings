@@ -13,7 +13,8 @@ env: composer
 vendor: composer
 	env/composer install
 
-test:
+test: vendor
+	./vendor/phpunit/phpunit/phpunit test
 
 builddir:
 	@mkdir -p build

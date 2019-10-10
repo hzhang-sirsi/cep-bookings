@@ -5,6 +5,7 @@ namespace SirsiDynix\CEPVenuesAssets\Settings;
 
 use SirsiDynix\CEPVenuesAssets\ECP\ECPIntegration;
 use SirsiDynix\CEPVenuesAssets\Wordpress;
+use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPMenuPage;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Settings\WPSettingsPage;
 use SirsiDynix\CEPVenuesAssets\Wordpress\Settings\WPSettingsSection;
 use Windwalker\Html\Form\InputElement;
@@ -27,23 +28,36 @@ class Registration
     private const OPTIONS_REMINDER_1_DELAY = 'cep_reminder_1_delay';
     private const OPTIONS_REMINDER_2_DELAY = 'cep_reminder_2_delay';
 
+    /**
+     * @var Wordpress
+     */
+    private $wordpress;
+
+    /**
+     * @var ECPIntegration
+     */
     private $ecp;
+
+    /**
+     * @var WPMenuPage
+     */
     private $menuPage;
 
-    public function __construct(ECPIntegration $ecp, $menuPage)
+    public function __construct(Wordpress $wordpress, ECPIntegration $ecp, $menuPage)
     {
+        $this->wordpress = $wordpress;
         $this->ecp = $ecp;
         $this->menuPage = $menuPage;
     }
 
     public function getDebug(): bool
     {
-        return Wordpress::get_option(self::OPTION_DEBUG) === "Enabled";
+        return $this->wordpress->get_option(self::OPTION_DEBUG) === "Enabled";
     }
 
     public function getECPRoomField(): string
     {
-        return (string)Wordpress::get_option(self::OPTION_ECP_ROOM_FIELD);
+        return (string)$this->wordpress->get_option(self::OPTION_ECP_ROOM_FIELD);
     }
 
     public function settingsInit()
@@ -51,7 +65,7 @@ class Registration
         $section = new WPSettingsSection(self::OPTIONS_SETTINGS_SECTION, 'CEP Marketo Integration', function () {
             echo '<p>CEP Marketo Configuration Settings</p>';
         }, $this->menuPage);
-        Wordpress::add_settings_section($section);
+        $this->wordpress->add_settings_section($section);
 
         $settings = [
             $section->createSetting(self::OPTION_DEBUG, 'Debug Enabled',
@@ -88,14 +102,14 @@ class Registration
         ];
 
         array_map(function ($setting) {
-            Wordpress::add_settings_field($setting);
-            Wordpress::register_setting($setting);
+            $this->wordpress->add_settings_field($setting);
+            $this->wordpress->register_setting($setting);
         }, $settings);
     }
 
     private function generateDropdown(string $option_name, array $options, string $default_name, string $default_value): void
     {
-        $selected = Wordpress::get_option($option_name);
+        $selected = $this->wordpress->get_option($option_name);
 
         echo "<select name=\"{$option_name}\">";
 
@@ -114,7 +128,7 @@ class Registration
     {
         return $section->createSetting($name, $title,
             function () use ($name) {
-                $currentValue = Wordpress::get_option($name);
+                $currentValue = $this->wordpress->get_option($name);
                 echo new InputElement('text', $name, $currentValue, ['class' => 'regular-text code']);
             }
         );

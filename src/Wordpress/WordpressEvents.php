@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPVenuesAssets\Wordpress;
 
 
+use Closure;
 use SirsiDynix\CEPVenuesAssets\Wordpress;
 
 /**
@@ -44,7 +45,7 @@ class WordpressEvents
     /**
      * @param $eventName
      * @param $priority
-     * @return \Closure
+     * @return Closure
      */
     private function dispatch(string $eventName, $priority)
     {
