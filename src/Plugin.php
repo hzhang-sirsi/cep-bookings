@@ -2,17 +2,17 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-namespace SirsiDynix\CEPVenuesAssets;
+namespace SirsiDynix\CEPBookings;
 
 use DI\Container;
-use SirsiDynix\CEPVenuesAssets\Metabox\EquipmentMetaboxProvider;
-use SirsiDynix\CEPVenuesAssets\Metabox\RoomMetaboxProvider;
-use SirsiDynix\CEPVenuesAssets\Settings\Registration;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Constants\MenuPosition;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPMenuPage;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPSubMenuPage;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Model\WPPostType;
-use SirsiDynix\CEPVenuesAssets\Wordpress\WordpressEvents;
+use SirsiDynix\CEPBookings\Metabox\EquipmentMetaboxProvider;
+use SirsiDynix\CEPBookings\Metabox\RoomMetaboxProvider;
+use SirsiDynix\CEPBookings\Settings\Registration;
+use SirsiDynix\CEPBookings\Wordpress\Constants\MenuPosition;
+use SirsiDynix\CEPBookings\Wordpress\Menu\WPMenuPage;
+use SirsiDynix\CEPBookings\Wordpress\Menu\WPSubMenuPage;
+use SirsiDynix\CEPBookings\Wordpress\Model\WPPostType;
+use SirsiDynix\CEPBookings\Wordpress\WordpressEvents;
 use Windwalker\Dom\HtmlElement;
 use Windwalker\Html\Form\FormWrapper;
 use function DI\autowire;
@@ -37,16 +37,16 @@ class Plugin
     private static function setup()
     {
         $container = self::getContainer();
-        $container->set('SettingsPage', new WPMenuPage('CEP Venues and Assets', 'CEP Venues and Assets', 'manage_options',
-            'cep-venues-assets-settings', function () {
+        $container->set('SettingsPage', new WPMenuPage('CEP Bookings', 'CEP Bookings', 'manage_options',
+            'cep-bookings-settings', function () {
                 $formOutput = Utils::captureAsString(function () {
                     settings_fields('section');
-                    do_settings_sections('cep-venues-assets-settings');
+                    do_settings_sections('cep-bookings-settings');
                     submit_button();
                 });
 
                 echo new HtmlElement('div', [
-                    new HtmlElement('h1', 'CEP Venues and Assets'),
+                    new HtmlElement('h1', 'CEP Bookings'),
                     new FormWrapper($formOutput, ['method' => 'post', 'action' => 'options.php'])
                 ], ['class' => 'wrap']);
             }, null, MenuPosition::BELOW_SETTINGS));

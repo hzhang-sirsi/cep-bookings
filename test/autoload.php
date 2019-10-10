@@ -2,7 +2,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-namespace SirsiDynix\CEPVenuesAssets;
+namespace SirsiDynix\CEPBookings;
 
 spl_autoload_register(function ($class) {
     if (substr($class, 0, strlen(__NAMESPACE__)) != __NAMESPACE__) {

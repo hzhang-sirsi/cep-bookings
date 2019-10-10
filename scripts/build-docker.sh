@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xe
 
-IMAGE_NAME='cep-venues-assets-builder'
+IMAGE_NAME='cep-bookings-builder'
 BUILD_ARTIFACTS_DIR='build'
 
 sudo docker build -t $IMAGE_NAME -f Dockerfile .

@@ -11,7 +11,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SirsiDynix\\CEPVenuesAssets\\": "src/"
+            "SirsiDynix\\CEPBookings\\": "src/"
         }
     }
 }

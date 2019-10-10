@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace SirsiDynix\CEPVenuesAssets\Metabox;
+namespace SirsiDynix\CEPBookings\Metabox;
 
 
-use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\MediaGalleryPicker;
-use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\WeeklyAvailabilityInput;
-use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\WPPostSelectInput;
-use SirsiDynix\CEPVenuesAssets\Wordpress;
+use SirsiDynix\CEPBookings\Metabox\Inputs\MediaGalleryPicker;
+use SirsiDynix\CEPBookings\Metabox\Inputs\WeeklyAvailabilityInput;
+use SirsiDynix\CEPBookings\Metabox\Inputs\WPPostSelectInput;
+use SirsiDynix\CEPBookings\Wordpress;
 
 class RoomMetaboxProvider extends MetadataMetaboxProvider
 {

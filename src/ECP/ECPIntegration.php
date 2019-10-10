@@ -1,9 +1,9 @@
 <?php /** @noinspection PhpUndefinedClassInspection */
 declare(strict_types=1);
 
-namespace SirsiDynix\CEPVenuesAssets\ECP;
+namespace SirsiDynix\CEPBookings\ECP;
 
-use SirsiDynix\CEPVenuesAssets\Wordpress;
+use SirsiDynix\CEPBookings\Wordpress;
 use Tribe__Events__Main;
 use Tribe__Events__Pro__Main;
 

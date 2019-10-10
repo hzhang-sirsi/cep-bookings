@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SirsiDynix\CEPVenuesAssets\Wordpress\Constants;
+namespace SirsiDynix\CEPBookings\Wordpress\Constants;
 
 
 class MenuPosition

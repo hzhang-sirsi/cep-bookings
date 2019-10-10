@@ -2,12 +2,12 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPVenuesAssets\Metabox\Inputs;
+namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
-use SirsiDynix\CEPVenuesAssets\Metabox\MetaboxFieldDefinition;
-use SirsiDynix\CEPVenuesAssets\Plugin;
-use SirsiDynix\CEPVenuesAssets\Wordpress;
+use SirsiDynix\CEPBookings\Metabox\MetaboxFieldDefinition;
+use SirsiDynix\CEPBookings\Plugin;
+use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\DomElement;
 use Windwalker\Dom\HtmlElement;
 use Windwalker\Html\Form\InputElement;

@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace SirsiDynix\CEPVenuesAssets\Metabox;
+namespace SirsiDynix\CEPBookings\Metabox;
 
 
-use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\GenericInput;
-use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\SelectInput;
-use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\WeeklyAvailabilityInput;
-use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\WPPostSelectInput;
-use SirsiDynix\CEPVenuesAssets\Wordpress;
+use SirsiDynix\CEPBookings\Metabox\Inputs\GenericInput;
+use SirsiDynix\CEPBookings\Metabox\Inputs\SelectInput;
+use SirsiDynix\CEPBookings\Metabox\Inputs\WeeklyAvailabilityInput;
+use SirsiDynix\CEPBookings\Metabox\Inputs\WPPostSelectInput;
+use SirsiDynix\CEPBookings\Wordpress;
 use WP_Post;
 use WP_Query;
 

@@ -2,7 +2,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-namespace SirsiDynix\CEPVenuesAssets;
+namespace SirsiDynix\CEPBookings;
 
 function GetBasePath(): string
 {

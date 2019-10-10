@@ -2,11 +2,11 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPVenuesAssets\Wordpress;
+namespace SirsiDynix\CEPBookings\Wordpress;
 
 
 use Closure;
-use SirsiDynix\CEPVenuesAssets\Wordpress;
+use SirsiDynix\CEPBookings\Wordpress;
 
 /**
  * @property Wordpress wordpress

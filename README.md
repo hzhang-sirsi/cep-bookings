@@ -1,5 +1,5 @@
-CEP Venues and Assets
-=====================
+CEP Bookings
+============
 
 This is a Wordpress plugin that hooks into The Events Calendar and Events Calendar PRO to enable the tracking of room
 and equipment availability.

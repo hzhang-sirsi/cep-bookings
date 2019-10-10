@@ -1,10 +1,10 @@
 <?php
 
 
-namespace SirsiDynix\CEPVenuesAssets\Metabox\Inputs;
+namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
-use SirsiDynix\CEPVenuesAssets\Wordpress;
+use SirsiDynix\CEPBookings\Wordpress;
 use WP_Post;
 use WP_Query;
 

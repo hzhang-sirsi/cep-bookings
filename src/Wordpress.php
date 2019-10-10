@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace SirsiDynix\CEPVenuesAssets;
+namespace SirsiDynix\CEPBookings;
 
-use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPMenuPage;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPSubMenuPage;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Model\WPPostType;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Settings\WPSetting;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Settings\WPSettingsSection;
+use SirsiDynix\CEPBookings\Wordpress\Menu\WPMenuPage;
+use SirsiDynix\CEPBookings\Wordpress\Menu\WPSubMenuPage;
+use SirsiDynix\CEPBookings\Wordpress\Model\WPPostType;
+use SirsiDynix\CEPBookings\Wordpress\Settings\WPSetting;
+use SirsiDynix\CEPBookings\Wordpress\Settings\WPSettingsSection;
 use WP_Post;
 use WP_Query;
 

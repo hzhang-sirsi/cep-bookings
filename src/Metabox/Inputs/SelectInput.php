@@ -2,10 +2,10 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPVenuesAssets\Metabox\Inputs;
+namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
-use SirsiDynix\CEPVenuesAssets\Metabox\MetaboxFieldDefinition;
+use SirsiDynix\CEPBookings\Metabox\MetaboxFieldDefinition;
 use Windwalker\Dom\DomElement;
 use Windwalker\Html\Option;
 use Windwalker\Html\Select\SelectList;

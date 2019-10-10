@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace SirsiDynix\CEPVenuesAssets\Metabox;
+namespace SirsiDynix\CEPBookings\Metabox;
 
 
-use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\Input;
-use SirsiDynix\CEPVenuesAssets\Wordpress;
+use SirsiDynix\CEPBookings\Metabox\Inputs\Input;
+use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\HtmlElement;
 use Windwalker\Html\Form\InputElement;
 use Windwalker\Html\Grid\Grid;
@@ -48,14 +48,14 @@ class MetadataMetaboxProvider
         foreach ($this->fields as $field) {
             $rootElem->addRow();
 
-            $fieldId = 'input-cep-venues-assets-' . $field->name;
+            $fieldId = 'input-cep-bookings-' . $field->name;
             $rootElem->setRowCell('key', new HtmlElement('label', $field->friendlyName, [
                 'for' => $fieldId
             ]));
             $rootElem->setRowCell('value', $this->resolveType($post, $field, $fieldId));
         }
 
-        $this->wordpress->add_meta_box('meta-cep-venues-assets', 'CEP Venues and Assets', function () use ($rootElem) {
+        $this->wordpress->add_meta_box('meta-cep-bookings', 'CEP Bookings', function () use ($rootElem) {
             echo $rootElem;
         }, $post->post_type);
     }

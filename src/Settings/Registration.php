@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace SirsiDynix\CEPVenuesAssets\Settings;
+namespace SirsiDynix\CEPBookings\Settings;
 
-use SirsiDynix\CEPVenuesAssets\ECP\ECPIntegration;
-use SirsiDynix\CEPVenuesAssets\Wordpress;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Menu\WPMenuPage;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Settings\WPSettingsPage;
-use SirsiDynix\CEPVenuesAssets\Wordpress\Settings\WPSettingsSection;
+use SirsiDynix\CEPBookings\ECP\ECPIntegration;
+use SirsiDynix\CEPBookings\Wordpress;
+use SirsiDynix\CEPBookings\Wordpress\Menu\WPMenuPage;
+use SirsiDynix\CEPBookings\Wordpress\Settings\WPSettingsPage;
+use SirsiDynix\CEPBookings\Wordpress\Settings\WPSettingsSection;
 use Windwalker\Html\Form\InputElement;
 
 class Registration

@@ -2,10 +2,10 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPVenuesAssets\Wordpress\Model;
+namespace SirsiDynix\CEPBookings\Wordpress\Model;
 
 
-use SirsiDynix\CEPVenuesAssets\Wordpress\Constants\MenuPosition;
+use SirsiDynix\CEPBookings\Wordpress\Constants\MenuPosition;
 
 /**
  * @property string name
