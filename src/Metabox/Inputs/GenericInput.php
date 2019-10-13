@@ -14,7 +14,7 @@ use WP_Post;
  * @property string $type
  * @property array attribs
  */
-class GenericInput implements Input
+class GenericInput extends Input
 {
     /**
      * @var callable
@@ -35,21 +35,10 @@ class GenericInput implements Input
     }
 
     /**
-     * @param WP_Post $post
-     * @param MetaboxFieldDefinition $field
-     * @param string $fieldId
-     * @return DomElement
-     */
-    public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
-    {
-        return new InputElement($this->type, $field->name, call_user_func_array($this->value, [$post, $field]), array_merge($this->attribs, ['id' => $fieldId, 'class' => 'code regular-text']));
-    }
-
-    /**
      * @param string $field
      * @return string[] Fieldnames to store
      */
-    public function getFields(string $field)
+    public static function getFields(string $field)
     {
         return [$field];
     }
@@ -58,8 +47,19 @@ class GenericInput implements Input
      * @param string $field
      * @return string[] Fieldnames to store
      */
-    public function getArrayFields(string $field)
+    public static function getArrayFields(string $field)
     {
         return [];
+    }
+
+    /**
+     * @param WP_Post $post
+     * @param MetaboxFieldDefinition $field
+     * @param string $fieldId
+     * @return DomElement
+     */
+    public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
+    {
+        return new InputElement($this->type, $field->name, call_user_func_array($this->value, [$post, $field]), array_merge($this->attribs, ['id' => $fieldId, 'class' => 'code regular-text']));
     }
 }

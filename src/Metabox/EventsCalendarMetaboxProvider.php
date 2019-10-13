@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox;
 
 
+use SirsiDynix\CEPBookings\Metabox\Inputs\RoomPicker;
 use SirsiDynix\CEPBookings\Wordpress;
 
 class EventsCalendarMetaboxProvider extends MetadataMetaboxProvider
@@ -16,8 +17,8 @@ class EventsCalendarMetaboxProvider extends MetadataMetaboxProvider
     public function __construct(Wordpress $wordpress, Wordpress\WordpressEvents $wordpressEvents)
     {
         parent::__construct($wordpress, $wordpressEvents, [
-            new MetaboxFieldDefinition('room_bookings', 'Room Bookings'),
-            new MetaboxFieldDefinition('equipment_reservations', 'Equipment Reservations'),
+            new MetaboxFieldDefinition('room_bookings', 'Room Bookings', new RoomPicker($wordpress)),
+            new MetaboxFieldDefinition('equipment_reservations', 'Equipment Reservations', new RoomPicker($wordpress)),
         ]);
     }
 }

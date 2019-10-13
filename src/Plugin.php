@@ -33,12 +33,7 @@ class Plugin
         $container->get(SettingsModule::class)->loadModule();
         $container->get(PostTypesModule::class)->loadModule();
         $container->get(MetaboxEditorModule::class)->loadModule();
-
-        $wpEvents = self::$container->get(WordpressEvents::class);
-        $wpEvents->addHandler('admin_enqueue_scripts', function () use ($container) {
-
-        });
-        self::$container->get(WordpressEvents::class)->registerHandlers();
+        $container->get(WordpressEvents::class)->registerHandlers();
     }
 
     public static function getContainer()

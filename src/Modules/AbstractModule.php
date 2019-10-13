@@ -7,7 +7,7 @@ namespace SirsiDynix\CEPBookings\Modules;
 
 use DI\Container;
 
-abstract class Module
+abstract class AbstractModule
 {
     /**
      * @var Container

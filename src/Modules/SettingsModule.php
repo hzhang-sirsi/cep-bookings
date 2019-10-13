@@ -16,7 +16,7 @@ use Windwalker\Html\Form\FormWrapper;
 use function DI\autowire;
 use function DI\get;
 
-class SettingsModule extends Module
+class SettingsModule extends AbstractModule
 {
     /**
      * Implement module loading

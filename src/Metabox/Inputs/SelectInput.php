@@ -14,7 +14,7 @@ use WP_Post;
 /**
  * @property callable elements
  */
-class SelectInput implements Input
+class SelectInput extends Input
 {
     /**
      * SelectInput constructor.
@@ -23,6 +23,24 @@ class SelectInput implements Input
     public function __construct(callable $elements)
     {
         $this->elements = $elements;
+    }
+
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public static function getFields(string $field)
+    {
+        return [$field];
+    }
+
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public static function getArrayFields(string $field)
+    {
+        return [];
     }
 
     /**
@@ -43,23 +61,5 @@ class SelectInput implements Input
         }
 
         return $root;
-    }
-
-    /**
-     * @param string $field
-     * @return string[] Fieldnames to store
-     */
-    public function getFields(string $field)
-    {
-        return [$field];
-    }
-
-    /**
-     * @param string $field
-     * @return string[] Fieldnames to store
-     */
-    public function getArrayFields(string $field)
-    {
-        return [];
     }
 }

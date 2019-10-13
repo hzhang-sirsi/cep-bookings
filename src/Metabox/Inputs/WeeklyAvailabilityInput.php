@@ -43,8 +43,33 @@ TAG;
 /**
  * @property string $type
  */
-class WeeklyAvailabilityInput implements Input
+class WeeklyAvailabilityInput extends Input
 {
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public static function getFields(string $field)
+    {
+        return [
+            "{$field}_startDate",
+            "{$field}_endDate",
+            "{$field}_startTime",
+            "{$field}_endTime",
+        ];
+    }
+
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public static function getArrayFields(string $field)
+    {
+        return [
+            "{$field}_weekdaysAvailable",
+        ];
+    }
+
     /**
      * @param WP_Post $post
      * @param MetaboxFieldDefinition $field
@@ -107,30 +132,5 @@ class WeeklyAvailabilityInput implements Input
             ], ['style' => 'display: flex; flex-direction: row;', 'class' => 'day-field-container'],
                 $value)
         ]);
-    }
-
-    /**
-     * @param string $field
-     * @return string[] Fieldnames to store
-     */
-    public function getFields(string $field)
-    {
-        return [
-            "{$field}_startDate",
-            "{$field}_endDate",
-            "{$field}_startTime",
-            "{$field}_endTime",
-        ];
-    }
-
-    /**
-     * @param string $field
-     * @return string[] Fieldnames to store
-     */
-    public function getArrayFields(string $field)
-    {
-        return [
-            "{$field}_weekdaysAvailable",
-        ];
     }
 }

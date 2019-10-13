@@ -64,7 +64,7 @@ class ClientScriptHelper
                         [
                             'url' => admin_url('admin-ajax.php'),
                             'postId' => $post->ID,
-                            'program' => $programId,
+                            'program' => '$programId',
                             'nonce' => wp_create_nonce('editEvent'),
                         ]
                     );

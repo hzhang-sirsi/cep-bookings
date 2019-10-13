@@ -15,6 +15,13 @@ class WordpressEventsDispatcher
     private $handlers;
 
     /**
+     * Is dispatcher frozen
+     *
+     * @var bool
+     */
+    private $frozen;
+
+    /**
      * WordpressEventsDispatcher constructor.
      * @param string[] $handlers
      */
@@ -28,6 +35,10 @@ class WordpressEventsDispatcher
 
     public function addHandler(string $name, callable $handler, int $priority = 10)
     {
+        if ($this->frozen) {
+            throw new RuntimeException("Dispatcher is already frozen");
+        }
+
         if (!array_key_exists($name, $this->handlers) || $this->handlers[$name] === null) {
             throw new RuntimeException("Handler {$name} is not registered");
         }
@@ -48,5 +59,17 @@ class WordpressEventsDispatcher
     public function getPriorities(string $name)
     {
         return array_keys($this->handlers[$name]);
+    }
+
+
+    /**
+     * Freezes this dispatcher, throwing an exception if a handler attempts to be registered afterwards.
+     * This ensures that all priorities are enumerated in getPriorities
+     *
+     * @see WordpressEventsDispatcher::getPriorities()
+     */
+    public function freeze()
+    {
+        $this->frozen = true;
     }
 }

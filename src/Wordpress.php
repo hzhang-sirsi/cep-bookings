@@ -126,6 +126,11 @@ class Wordpress
         return add_submenu_page($parentSlug, $subMenuPage->page_title, $subMenuPage->menu_title, $subMenuPage->capability, $subMenuPage->menu_slug, $subMenuPage->function);
     }
 
+    public function wp_register_script($handle, $src = '', $deps = array(), $ver = false, $in_footer = false)
+    {
+        return wp_register_script($handle, $src, $deps, $ver, $in_footer);
+    }
+
     public function wp_enqueue_script($handle, $src = '', $deps = array(), $ver = false, $in_footer = false)
     {
         return wp_enqueue_script($handle, $src, $deps, $ver, $in_footer);
@@ -152,5 +157,20 @@ class Wordpress
     public function get_current_screen()
     {
         return get_current_screen();
+    }
+
+    public function add_thickbox()
+    {
+        return add_thickbox();
+    }
+
+    public function wp_register_style($handle, $src = '', $deps = array(), $ver = false, $media = 'all')
+    {
+        return wp_register_style($handle, $src, $deps, $ver, $media);
+    }
+
+    public function wp_enqueue_style($handle, $src = '', $deps = array(), $ver = false, $media = 'all')
+    {
+        return wp_enqueue_style($handle, $src, $deps, $ver, $media);
     }
 }

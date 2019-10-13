@@ -16,7 +16,7 @@ use WP_Post;
 /**
  * @property string $type
  */
-class MediaGalleryPicker implements Input
+class MediaGalleryPicker extends Input
 {
     /**
      * @var Wordpress
@@ -32,6 +32,25 @@ class MediaGalleryPicker implements Input
         $this->wordpress = $wordpress;
     }
 
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public static function getFields(string $field)
+    {
+        return [
+            "{$field}_imageId",
+        ];
+    }
+
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    public static function getArrayFields(string $field)
+    {
+        return [];
+    }
 
     /**
      * @param WP_Post $post
@@ -73,25 +92,5 @@ class MediaGalleryPicker implements Input
             ], ['style' => 'display: flex; flex-direction: column; justify-content: space-between; margin: 5px;']),
             new InputElement('hidden', $field->name . '_imageId', $post->{$field->name . '_imageId'}, ['id' => 'input-image-id']),
         ], ['style' => 'display: flex; flex-direction: row;']);
-    }
-
-    /**
-     * @param string $field
-     * @return string[] Fieldnames to store
-     */
-    public function getFields(string $field)
-    {
-        return [
-            "{$field}_imageId",
-        ];
-    }
-
-    /**
-     * @param string $field
-     * @return string[] Fieldnames to store
-     */
-    public function getArrayFields(string $field)
-    {
-        return [];
     }
 }

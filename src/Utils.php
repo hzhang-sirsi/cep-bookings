@@ -17,9 +17,9 @@ class Utils
         return ob_get_clean();
     }
 
-    public static function generateUniqueIdentifier(string $prefix)
+    public static function generateUniqueIdentifier(string $prefix = 'cep_bookings')
     {
-        $id = self::randomHexString(32);
+        $id = self::randomHexString(16);
         return "{$prefix}_{$id}";
     }
 

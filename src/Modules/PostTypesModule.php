@@ -11,8 +11,9 @@ use SirsiDynix\CEPBookings\Wordpress;
 use SirsiDynix\CEPBookings\Wordpress\Menu\WPSubMenuPage;
 use SirsiDynix\CEPBookings\Wordpress\Model\WPPostType;
 use SirsiDynix\CEPBookings\Wordpress\WordpressEvents;
+use WP_Post;
 
-class PostTypesModule extends Module
+class PostTypesModule extends AbstractModule
 {
     /**
      * Implement module loading
@@ -61,6 +62,11 @@ class PostTypesModule extends Module
                 'edit.php?post_type=room_type'));
             $wordpress->add_sub_menu_page(new WPSubMenuPage('edit.php?post_type=equipment', 'Equipment Types', 'Equipment Types', 'edit_posts',
                 'edit.php?post_type=equipment_type'));
+        });
+
+        $wpEvents->addHandler('save_post', function (int $post_id, WP_Post $post, bool $update = null) {
+            $this->container->get(RoomMetaboxProvider::class)->savePostCallback($post_id, $post, $update);
+            $this->container->get(EquipmentMetaboxProvider::class)->savePostCallback($post_id, $post, $update);
         });
     }
 }
