@@ -2,10 +2,11 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPVenuesAssets\Wordpress;
+namespace SirsiDynix\CEPBookings\Wordpress;
 
 
-use SirsiDynix\CEPVenuesAssets\Wordpress;
+use Closure;
+use SirsiDynix\CEPBookings\Wordpress;
 
 /**
  * @property Wordpress wordpress
@@ -24,9 +25,11 @@ class WordpressEvents
 
     /**
      * WordpressEvents constructor.
+     * @param Wordpress $wordpress Wordpress instance
      */
-    public function __construct()
+    public function __construct(Wordpress $wordpress)
     {
+        $this->wordpress = $wordpress;
         $this->proxy = new WordpressEventsDispatcher(self::SUBSCRIBED_EVENTS);
     }
 
@@ -34,7 +37,7 @@ class WordpressEvents
     {
         foreach (self::SUBSCRIBED_EVENTS as $eventName) {
             foreach ($this->proxy->getPriorities($eventName) as $priority) {
-                Wordpress::add_action_fn($eventName, $this->dispatch($eventName, $priority), $priority);
+                $this->wordpress->add_action($eventName, $this->dispatch($eventName, $priority), $priority);
             }
         }
     }
@@ -42,7 +45,7 @@ class WordpressEvents
     /**
      * @param $eventName
      * @param $priority
-     * @return \Closure
+     * @return Closure
      */
     private function dispatch(string $eventName, $priority)
     {

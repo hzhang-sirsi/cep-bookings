@@ -6,11 +6,12 @@
         "windwalker/html": "^3.5"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.4"
+        "phpunit/phpunit": "^8.4",
+        "overtrue/phplint": "^1.1"
     },
     "autoload": {
         "psr-4": {
-            "SirsiDynix\\CEPVenuesAssets\\": "src/"
+            "SirsiDynix\\CEPBookings\\": "src/"
         }
     }
 }

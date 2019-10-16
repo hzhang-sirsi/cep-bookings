@@ -2,10 +2,10 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPVenuesAssets\Metabox;
+namespace SirsiDynix\CEPBookings\Metabox;
 
 
-use SirsiDynix\CEPVenuesAssets\Metabox\Inputs\Input;
+use SirsiDynix\CEPBookings\Metabox\Inputs\Input;
 
 /**
  * @property string name

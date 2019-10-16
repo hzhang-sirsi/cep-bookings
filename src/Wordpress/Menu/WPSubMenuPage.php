@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPVenuesAssets\Wordpress\Menu;
+namespace SirsiDynix\CEPBookings\Wordpress\Menu;
 
 
 /**

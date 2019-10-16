@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPVenuesAssets\Wordpress;
+namespace SirsiDynix\CEPBookings\Wordpress;
 
 
 use RuntimeException;
