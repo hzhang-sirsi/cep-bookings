@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
-use SirsiDynix\CEPBookings\Metabox\MetaboxFieldDefinition;
 use SirsiDynix\CEPBookings\Rest\Script\ClientScriptHelper;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\DomElement;
@@ -60,11 +59,11 @@ class EquipmentPicker extends Input
 
     /**
      * @param WP_Post $post
-     * @param MetaboxFieldDefinition $field
+     * @param string $fieldName
      * @param string $fieldId
      * @return DomElement
      */
-    public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
+    public function render(WP_Post $post, string $fieldName, string $fieldId)
     {
         $this->wordpress->wp_enqueue_style('jquery-modal-css');
         $this->wordpress->wp_enqueue_script('jquery-modal-js');
@@ -72,8 +71,8 @@ class EquipmentPicker extends Input
         $this->wordpress->wp_enqueue_script('jquery-timepicker-js');
         $this->wordpress->wp_enqueue_style('equipment-picker-css', $this->wordpress->plugins_url('/static/css/equipment-picker.css'));
 
-        $startTimeFieldId = $field->name . '-start-time';
-        $endTimeFieldId = $field->name . '-end-time';
+        $startTimeFieldId = $fieldId . '-start-time';
+        $endTimeFieldId = $fieldId . '-end-time';
         $eventDateFieldId = $fieldId . '-date';
         $equipmentTypeFieldId = $fieldId . '-equipment-type';
         $searchButtonFieldId = $fieldId . '-search-button';
@@ -101,7 +100,7 @@ class EquipmentPicker extends Input
                     new HtmlElement('div', [
                         new HtmlElement('div', [
                             new HtmlElement('label', ['Equipment Type']),
-                            (new WPPostSelectInput($this->wordpress, 'equipment_type'))->render($post, $field, $equipmentTypeFieldId),
+                            (new WPPostSelectInput($this->wordpress, 'equipment_type'))->render($post, $fieldName, $equipmentTypeFieldId),
                         ], ['style' => 'align-items: center;']),
                         new HtmlElement('div', [
                             new HtmlElement('label', ['Date']),
@@ -131,5 +130,16 @@ class EquipmentPicker extends Input
                 'rel' => 'modal:open', 'id' => $editButtonFieldId,
             ]),
         ]);
+    }
+
+    /**
+     * @param Wordpress $wordpress
+     * @param WP_Post $post
+     * @param string $fieldName
+     * @return void
+     */
+    public function saveFields(Wordpress $wordpress, WP_Post $post, string $fieldName)
+    {
+        // TODO: Implement saveFields() method.
     }
 }

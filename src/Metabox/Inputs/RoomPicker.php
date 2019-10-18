@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
-use SirsiDynix\CEPBookings\Metabox\MetaboxFieldDefinition;
 use SirsiDynix\CEPBookings\Rest\Script\ClientScriptHelper;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\DomElement;
@@ -41,30 +40,12 @@ class RoomPicker extends Input
     }
 
     /**
-     * @param string $field
-     * @return string[] Fieldnames to store
-     */
-    public static function getFields(string $field)
-    {
-        return [];
-    }
-
-    /**
-     * @param string $field
-     * @return string[] Fieldnames to store
-     */
-    public static function getArrayFields(string $field)
-    {
-        return [];
-    }
-
-    /**
      * @param WP_Post $post
-     * @param MetaboxFieldDefinition $field
+     * @param string $fieldName
      * @param string $fieldId
      * @return DomElement
      */
-    public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
+    public function render(WP_Post $post, string $fieldName, string $fieldId)
     {
         $this->wordpress->wp_enqueue_style('jquery-modal-css');
         $this->wordpress->wp_enqueue_script('jquery-modal-js');
@@ -72,14 +53,16 @@ class RoomPicker extends Input
         $this->wordpress->wp_enqueue_script('jquery-timepicker-js');
         $this->wordpress->wp_enqueue_style('room-picker-css', $this->wordpress->plugins_url('/static/css/room-picker.css'));
 
-        $startTimeFieldId = $field->name . '-start-time';
-        $endTimeFieldId = $field->name . '-end-time';
+        $startTimeFieldId = $fieldId . '-start-time';
+        $endTimeFieldId = $fieldId . '-end-time';
         $eventDateFieldId = $fieldId . '-date';
         $roomTypeFieldId = $fieldId . '-room-type';
         $searchButtonFieldId = $fieldId . '-search-button';
+        $saveButtonFieldId = $fieldId . '-save-button';
         $resultsContentFieldId = $fieldId . '-results';
-        $editButtonFieldId = $fieldId . 'edit-button';
-        $contentId = $fieldId . '-content';
+        $editButtonFieldId = $fieldId . '-edit-button';
+        $summaryLabelFieldId = $fieldId . '-summary-label';
+        $contentFieldId = $fieldId . '-content';
         $data = [
             'fieldIds' => [
                 'startTime' => $startTimeFieldId,
@@ -87,9 +70,12 @@ class RoomPicker extends Input
                 'eventDate' => $eventDateFieldId,
                 'roomType' => $roomTypeFieldId,
                 'searchButton' => $searchButtonFieldId,
+                'saveButton' => $saveButtonFieldId,
                 'results' => $resultsContentFieldId,
                 'editButton' => $editButtonFieldId,
-                'content' => $contentId,
+                'summaryLabel' => $summaryLabelFieldId,
+                'content' => $contentFieldId,
+                'value' => $fieldId,
             ]
         ];
         $this->roomPickerAjaxScript->enqueue($data);
@@ -101,7 +87,7 @@ class RoomPicker extends Input
                     new HtmlElement('div', [
                         new HtmlElement('div', [
                             new HtmlElement('label', ['Room Type']),
-                            (new WPPostSelectInput($this->wordpress, 'room_type'))->render($post, $field, $roomTypeFieldId),
+                            (new WPPostSelectInput($this->wordpress, 'room_type'))->render($post, $fieldName, $roomTypeFieldId),
                         ], ['style' => 'align-items: center;']),
                         new HtmlElement('div', [
                             new HtmlElement('label', ['Date']),
@@ -119,17 +105,33 @@ class RoomPicker extends Input
                                 ], ['style' => 'flex-direction: column;']),
                             ], ['class' => 'flex-row']),
                             new HtmlElement('div', [
-                                new HtmlElement('a', ['Find Available Room'], ['class' => 'button', 'id' => $searchButtonFieldId])
-                            ], ['style' => 'align-self: flex-end;'])
+                                new HtmlElement('a', ['Find Available Room'], ['class' => 'button', 'id' => $searchButtonFieldId]),
+                            ], ['style' => 'align-self: flex-end;']),
                         ], ['style' => 'justify-content: space-between;']),
                     ], ['class' => 'search-control']),
-                    new HtmlElement('div', [], ['id' => $resultsContentFieldId]),
+                    new HtmlElement('div', [], ['class' => 'content', 'id' => $resultsContentFieldId]),
+                    new HtmlElement('div', [
+                        new HtmlElement('a', ['Save'], ['class' => 'button button-primary', 'id' => $saveButtonFieldId]),
+                    ], ['class' => 'footer']),
                 ], ['style' => 'flex-direction: column;']),
-            ], ['id' => $contentId, 'class' => 'room-modal', 'style' => 'display: none;']),
+            ], ['id' => $contentFieldId, 'class' => 'room-modal', 'style' => 'display: none;']),
+            new HtmlElement('label', [], ['id' => $summaryLabelFieldId]),
             new HtmlElement('a', ['Edit'], [
-                'class' => 'button', 'href' => '#' . $contentId,
+                'class' => 'button', 'href' => '#' . $contentFieldId,
                 'rel' => 'modal:open', 'id' => $editButtonFieldId,
             ]),
+            new InputElement('hidden', $fieldName, '', ['id' => $fieldId])
         ]);
+    }
+
+    /**
+     * @param Wordpress $wordpress
+     * @param WP_Post $post
+     * @param string $fieldName
+     * @return void
+     */
+    public function saveFields(Wordpress $wordpress, WP_Post $post, string $fieldName)
+    {
+        // TODO: Implement saveFields() method.
     }
 }

@@ -12,6 +12,10 @@
     display: flex;
 }
 
+.room-modal div.content {
+    flex-grow: 1;
+}
+
 .equipment-modal .flex-row {
     flex-direction: row;
 }

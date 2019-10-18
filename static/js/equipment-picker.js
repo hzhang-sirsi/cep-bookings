@@ -29,53 +29,56 @@
     $(document).ready(function () {
         $('#' + fieldIds.searchButton).on('click', () => {
             (async function () {
+                let root = document.getElementById(fieldIds.results);
                 await (makeRequest(
-                        'cb_equip_search', {
-                            equipmentType: $('#' + fieldIds.equipmentType).val(),
-                            eventDate: $('#' + fieldIds.eventDate).val(),
-                            startTime: $('#' + fieldIds.startTime).val(),
-                            endTime: $('#' + fieldIds.endTime).val(),
-                        }).then(function handleResponse(response) {
-                        if (!response.success) {
-                            if ('error' in response && response.error) {
-                                throw response.error;
-                            } else {
-                                throw "Unknown error occurred while processing your request";
-                            }
-                        }
-
-                        let root = document.getElementById(fieldIds.results);
-                        root.innerHTML = '';
-
-                        if (response.data.posts.length > 0) {
-                            for (let post of response.data.posts) {
-                                let container = document.createElement('div');
-                                container.setAttribute('style', 'display: flex; flex-direction: column; max-width: 150px;')
-
-                                let image = document.createElement('img');
-                                image.setAttribute('src', post['thumbnail']);
-                                image.setAttribute('style', 'max-height: 100px;');
-                                let label = document.createElement('label');
-                                label.textContent = post['title'];
-                                let quantity = document.createElement('input');
-                                quantity.setAttribute('type', 'number');
-                                quantity.setAttribute('min', '0');
-                                quantity.setAttribute('value', '0');
-
-                                container.appendChild(image);
-                                container.appendChild(label);
-                                container.appendChild(quantity);
-
-                                root.appendChild(container);
-                            }
+                    'cb_equip_search', {
+                        equipmentType: $('#' + fieldIds.equipmentType).val(),
+                        eventDate: $('#' + fieldIds.eventDate).val(),
+                        startTime: $('#' + fieldIds.startTime).val(),
+                        endTime: $('#' + fieldIds.endTime).val(),
+                    }).then(function handleResponse(response) {
+                    if (!response.success) {
+                        if ('error' in response && response.error) {
+                            throw response.error;
                         } else {
-                            let error = document.createElement('label');
-                            error.textContent = 'No equipment found.';
-
-                            root.appendChild(error);
+                            throw "Unknown error occurred while processing your request";
                         }
-                    })
-                );
+                    }
+
+                    if (response.data.posts.length === 0) {
+                        throw 'No equipment found.';
+                    }
+
+                    root.innerHTML = '';
+
+                    for (let post of response.data.posts) {
+                        let container = document.createElement('div');
+                        container.setAttribute('style', 'display: flex; flex-direction: column; max-width: 150px;')
+
+                        let image = document.createElement('img');
+                        image.setAttribute('src', post['thumbnail']);
+                        image.setAttribute('style', 'max-height: 100px;');
+                        let label = document.createElement('label');
+                        label.textContent = post['title'];
+                        let quantity = document.createElement('input');
+                        quantity.setAttribute('type', 'number');
+                        quantity.setAttribute('min', '0');
+                        quantity.setAttribute('value', '0');
+
+                        container.appendChild(image);
+                        container.appendChild(label);
+                        container.appendChild(quantity);
+
+                        root.appendChild(container);
+                    }
+                }).catch((error) => {
+                    root.innerHTML = '';
+
+                    let errorElem = document.createElement('label');
+                    errorElem.textContent = error.toString();
+
+                    root.appendChild(errorElem);
+                }));
             })();
         });
 

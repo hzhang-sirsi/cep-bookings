@@ -82,7 +82,7 @@ class MetadataMetaboxProvider
     private function resolveType(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
     {
         if ($field->type != null && $field->type instanceof Input) {
-            return $field->type->render($post, $field, $fieldId);
+            return $field->type->render($post, $field->name, $fieldId);
         } elseif ($field->type === null || $field->type === 'text') {
             return new InputElement('text', $field->name,
                 $post->{$field->name}, ['id' => $fieldId, 'class' => 'code regular-text']);
@@ -99,38 +99,18 @@ class MetadataMetaboxProvider
         }
     }
 
-    public function savePostCallback(int $post_id, WP_Post $post, bool $update = null)
+    public function savePostCallback(int $post_id, WP_Post $post, bool $update = null): void
     {
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || $post->post_type === 'revision' || wp_is_post_autosave($post_id) || (defined('DOING_AJAX') && DOING_AJAX)) {
             return;
         }
         if ($parent_id = $this->wordpress->wp_is_post_revision($post_id)) {
             $post_id = $parent_id;
+            $post = $this->wordpress->get_post($post_id);
         }
 
-        $processField = function (WP_Post $post, string $field, $value) {
-            if (is_array($value)) {
-                $value = join(' ', array_map('sanitize_text_field', $value));
-            } else {
-                $value = sanitize_text_field($value);
-            }
-            $this->wordpress->update_post_meta($post->ID, $field, $value);
-        };
-
         foreach ($this->fields as $fielddef) {
-            foreach ($fielddef->getFields() as $field) {
-                if (array_key_exists($field, $_POST)) {
-                    $processField($post, $field, $_POST[$field]);
-                }
-            }
-
-            foreach ($fielddef->getArrayFields() as $field) {
-                if (array_key_exists($field, $_POST)) {
-                    $processField($post, $field, $_POST[$field]);
-                } elseif (isset($post->$field)) {
-                    $this->wordpress->update_post_meta($post_id, $field, '');
-                }
-            }
+            $fielddef->saveFields($this->wordpress, $post);
         }
     }
 }

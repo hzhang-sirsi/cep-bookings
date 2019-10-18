@@ -22,8 +22,8 @@ class EquipmentMetaboxProvider extends MetadataMetaboxProvider
         parent::__construct($wordpress, $wordpressEvents, [
             new MetaboxFieldDefinition('location', 'Location', new WPPostSelectInput($wordpress, 'tribe_venue')),
             new MetaboxFieldDefinition('equipment_type', 'Equipment Type', new WPPostSelectInput($wordpress, 'equipment_type')),
-            new MetaboxFieldDefinition('quantity', 'Quantity', new GenericInput('number', function (WP_Post $post, MetaboxFieldDefinition $field) {
-                return $post->{$field->name};
+            new MetaboxFieldDefinition('quantity', 'Quantity', new GenericInput('number', function (WP_Post $post, string $fieldName) {
+                return $post->{$fieldName};
             }, ['min' => '0'])),
             new MetaboxFieldDefinition('availability', 'Availability', new WeeklyAvailabilityInput()),
         ]);

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
-use SirsiDynix\CEPBookings\Metabox\MetaboxFieldDefinition;
 use Windwalker\Dom\DomElement;
 use Windwalker\Html\Form\InputElement;
 use WP_Post;
@@ -14,7 +13,7 @@ use WP_Post;
  * @property string $type
  * @property array attribs
  */
-class GenericInput extends Input
+class GenericInput extends PostMetaInput
 {
     /**
      * @var callable
@@ -54,12 +53,12 @@ class GenericInput extends Input
 
     /**
      * @param WP_Post $post
-     * @param MetaboxFieldDefinition $field
+     * @param string $fieldName
      * @param string $fieldId
      * @return DomElement
      */
-    public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
+    public function render(WP_Post $post, string $fieldName, string $fieldId)
     {
-        return new InputElement($this->type, $field->name, call_user_func_array($this->value, [$post, $field]), array_merge($this->attribs, ['id' => $fieldId, 'class' => 'code regular-text']));
+        return new InputElement($this->type, $fieldName, call_user_func_array($this->value, [$post, $fieldName]), array_merge($this->attribs, ['id' => $fieldId, 'class' => 'code regular-text']));
     }
 }
