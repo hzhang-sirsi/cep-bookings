@@ -25,7 +25,13 @@ class Wordpress
         return $wp_version;
     }
 
-    public function add_action(string $event, callable $function, int $priority = 10, int $nargs = 2)
+    public static function get_database()
+    {
+        global $wpdb;
+        return $wpdb;
+    }
+
+    public function add_action(string $event, $function, int $priority = 10, int $nargs = 2)
     {
         return add_action($event, $function, $priority, $nargs);
     }
@@ -84,7 +90,6 @@ class Wordpress
     {
         return $query->get_posts();
     }
-
 
     public function update_post_meta(int $post_id, string $key, string $value, string $prev = null)
     {
@@ -172,5 +177,20 @@ class Wordpress
     public function wp_enqueue_style($handle, $src = '', $deps = array(), $ver = false, $media = 'all')
     {
         return wp_enqueue_style($handle, $src, $deps, $ver, $media);
+    }
+
+    public function wp_localize_script(string $handle, string $object_name, array $l10n)
+    {
+        return wp_localize_script($handle, $object_name, $l10n);
+    }
+
+    public function admin_url($path = '', $scheme = 'admin')
+    {
+        return admin_url($path, $scheme);
+    }
+
+    public function wp_create_nonce($action)
+    {
+        return wp_create_nonce($action);
     }
 }

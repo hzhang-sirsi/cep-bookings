@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Rest\Script;
 
 
-use Closure;
-use SirsiDynix\CEPBookings\Plugin;
 use SirsiDynix\CEPBookings\Wordpress;
+use SirsiDynix\CEPBookings\Wordpress\Ajax\AjaxHandler;
 
 class ClientScriptHelper
 {
@@ -17,59 +16,75 @@ class ClientScriptHelper
     private $wordpress;
 
     /**
+     * @var string
+     */
+    private $scriptName;
+
+    /**
+     * @var string
+     */
+    private $scriptUrl;
+
+    /**
+     * @var string
+     */
+    private $objectName;
+
+    /**
+     * @var AjaxHandler[]
+     */
+    private $handlers;
+
+    /**
+     * @var array
+     */
+    private $dependencies;
+
+    /**
      * ClientScriptHelper constructor.
      * @param Wordpress $wordpress
+     * @param string $scriptName
+     * @param string $scriptUrl
+     * @param array $dependencies
+     * @param string $objectName
+     * @param AjaxHandler[] $handlers
      */
-    public function __construct(Wordpress $wordpress)
+    public function __construct(Wordpress $wordpress, string $scriptName, string $scriptUrl, array $dependencies, string $objectName, $handlers)
     {
         $this->wordpress = $wordpress;
-        $screen = get_current_screen();
-        if (is_object($screen)) {
-            if (in_array($screen->base, ['post']) && in_array($screen->post_type, [$this->ecp->getEventsPostType()])) {
-                global $post;
-                $metadata = $this->wordpress->get_post_meta($post->ID, self::CEP_MARKETO_METADATA_FIELD, true);
-                $programId = intval($metadata);
-
-                wp_enqueue_script('editEvent', plugins_url('/static/js/hooks.js', $this->plugin->getRoot()), ['jquery']);
-                wp_localize_script(
-                    'editEvent',
-                    'ajaxParams',
-                    [
-                        'url' => admin_url('admin-ajax.php'),
-                        'postId' => $post->ID,
-                        'program' => $programId,
-                        'nonce' => wp_create_nonce('editEvent'),
-                    ]
-                );
-            }
-        };
+        $this->scriptName = $scriptName;
+        $this->scriptUrl = $scriptUrl;
+        $this->dependencies = $dependencies;
+        $this->objectName = $objectName;
+        $this->handlers = $handlers;
     }
 
     /**
-     * @param string $postType
-     * @return Closure
+     * @param array $data
+     * @return void
      */
-    public function handler(string $postType)
+    public function enqueue(array $data = [])
     {
-        return function () use ($postType) {
-            $screen = $this->wordpress->get_current_screen();
-            if (is_object($screen)) {
-                if (in_array($screen->base, ['post']) && in_array($screen->post_type, [$postType])) {
-                    $post = $this->wordpress->get_post();
+        $this->wordpress->wp_enqueue_script($this->scriptName, $this->wordpress->plugins_url($this->scriptUrl),
+            array_merge($this->dependencies, ['jquery']));
+        $this->wordpress->wp_localize_script(
+            $this->scriptName,
+            $this->objectName,
+            array_merge([
+                '_ajax' => [
+                    'url' => $this->wordpress->admin_url('admin-ajax.php'),
+                    'nonce' => $this->createNonces(),
+                ],
+            ], $data)
+        );
+    }
 
-                    wp_enqueue_script('editEvent', plugins_url('/static/js/hooks.js', Plugin::getRoot()), ['jquery']);
-                    wp_localize_script(
-                        'editEvent',
-                        'ajaxParams',
-                        [
-                            'url' => admin_url('admin-ajax.php'),
-                            'postId' => $post->ID,
-                            'program' => '$programId',
-                            'nonce' => wp_create_nonce('editEvent'),
-                        ]
-                    );
-                }
-            }
-        };
+    private function createNonces()
+    {
+        $nonces = [];
+        foreach ($this->handlers as $handler) {
+            $nonces[$handler->getEventName()] = $this->wordpress->wp_create_nonce($handler->getEventName());
+        }
+        return $nonces;
     }
 }

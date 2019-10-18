@@ -17,7 +17,7 @@ use WP_Post;
 /**
  * @property string $type
  */
-class RoomPicker extends Input
+class EquipmentPicker extends Input
 {
     /**
      * @var Wordpress
@@ -27,17 +27,17 @@ class RoomPicker extends Input
     /**
      * @var ClientScriptHelper
      */
-    private $roomPickerAjaxScript;
+    private $equipmentPickerAjaxScript;
 
     /**
      * MediaGalleryPicker constructor.
      * @param Wordpress $wordpress
-     * @param ClientScriptHelper $roomPickerAjaxScript
+     * @param ClientScriptHelper $equipmentPickerAjaxScript
      */
-    public function __construct(Wordpress $wordpress, ClientScriptHelper $roomPickerAjaxScript)
+    public function __construct(Wordpress $wordpress, ClientScriptHelper $equipmentPickerAjaxScript)
     {
         $this->wordpress = $wordpress;
-        $this->roomPickerAjaxScript = $roomPickerAjaxScript;
+        $this->equipmentPickerAjaxScript = $equipmentPickerAjaxScript;
     }
 
     /**
@@ -70,12 +70,12 @@ class RoomPicker extends Input
         $this->wordpress->wp_enqueue_script('jquery-modal-js');
         $this->wordpress->wp_enqueue_style('jquery-timepicker-css');
         $this->wordpress->wp_enqueue_script('jquery-timepicker-js');
-        $this->wordpress->wp_enqueue_style('room-picker-css', $this->wordpress->plugins_url('/static/css/room-picker.css'));
+        $this->wordpress->wp_enqueue_style('equipment-picker-css', $this->wordpress->plugins_url('/static/css/equipment-picker.css'));
 
         $startTimeFieldId = $field->name . '-start-time';
         $endTimeFieldId = $field->name . '-end-time';
         $eventDateFieldId = $fieldId . '-date';
-        $roomTypeFieldId = $fieldId . '-room-type';
+        $equipmentTypeFieldId = $fieldId . '-equipment-type';
         $searchButtonFieldId = $fieldId . '-search-button';
         $resultsContentFieldId = $fieldId . '-results';
         $editButtonFieldId = $fieldId . 'edit-button';
@@ -85,22 +85,22 @@ class RoomPicker extends Input
                 'startTime' => $startTimeFieldId,
                 'endTime' => $endTimeFieldId,
                 'eventDate' => $eventDateFieldId,
-                'roomType' => $roomTypeFieldId,
+                'equipmentType' => $equipmentTypeFieldId,
                 'searchButton' => $searchButtonFieldId,
                 'results' => $resultsContentFieldId,
                 'editButton' => $editButtonFieldId,
                 'content' => $contentId,
             ]
         ];
-        $this->roomPickerAjaxScript->enqueue($data);
+        $this->equipmentPickerAjaxScript->enqueue($data);
 
         return new HtmlElement('div', [
             new HtmlElement('div', [
                 new HtmlElement('div', [
-                    new HtmlElement('h1', ['Rooms']),
+                    new HtmlElement('h1', ['Equipment']),
                     new HtmlElement('div', [
-                        new HtmlElement('label', ['Room Type'], ['style' => 'flex-basis: 100px;']),
-                        (new WPPostSelectInput($this->wordpress, 'room_type'))->render($post, $field, $roomTypeFieldId),
+                        new HtmlElement('label', ['Equipment Type'], ['style' => 'flex-basis: 100px;']),
+                        (new WPPostSelectInput($this->wordpress, 'equipment_type'))->render($post, $field, $equipmentTypeFieldId),
                     ], ['style' => 'display: flex; align-items: center;']),
                     new HtmlElement('div', [
                         new HtmlElement('label', ['Date'], ['style' => 'flex-basis: 100px;']),
@@ -118,12 +118,12 @@ class RoomPicker extends Input
                             ], ['style' => 'display: flex; flex-direction: column;']),
                         ], ['style' => 'display: flex; flex-direction: row;']),
                         new HtmlElement('div', [
-                            new HtmlElement('a', ['Find Available Room'], ['class' => 'button', 'id' => $searchButtonFieldId])
+                            new HtmlElement('a', ['Find Equipment'], ['class' => 'button', 'id' => $searchButtonFieldId])
                         ], ['style' => 'align-self: flex-end;'])
                     ], ['style' => 'display: flex; justify-content: space-between;']),
                     new HtmlElement('div', [], ['id' => $resultsContentFieldId]),
                 ], ['style' => 'display: flex; flex-direction: column;']),
-            ], ['id' => $contentId, 'class' => 'room-modal', 'style' => 'display: none; width: 750px; height: 600px;']),
+            ], ['id' => $contentId, 'class' => 'equipment-modal', 'style' => 'display: none; width: 750px; height: 600px;']),
             new HtmlElement('a', ['Edit'], [
                 'class' => 'button', 'href' => '#' . $contentId,
                 'rel' => 'modal:open', 'id' => $editButtonFieldId,
