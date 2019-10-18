@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPBookings\Metabox;
+namespace SirsiDynix\CEPBookings\Metabox\Fields;
 
 
 use SirsiDynix\CEPBookings\Metabox\Inputs\Input;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox;
 
 
+use SirsiDynix\CEPBookings\Metabox\Fields\MetaboxFieldDefinition;
 use SirsiDynix\CEPBookings\Metabox\Inputs\GenericInput;
 use SirsiDynix\CEPBookings\Metabox\Inputs\WeeklyAvailabilityInput;
 use SirsiDynix\CEPBookings\Metabox\Inputs\WPPostSelectInput;

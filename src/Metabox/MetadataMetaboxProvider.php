@@ -5,6 +5,7 @@ namespace SirsiDynix\CEPBookings\Metabox;
 
 
 use Closure;
+use SirsiDynix\CEPBookings\Metabox\Fields\MetaboxFieldDefinition;
 use SirsiDynix\CEPBookings\Metabox\Inputs\Input;
 use SirsiDynix\CEPBookings\Utils;
 use SirsiDynix\CEPBookings\Wordpress;
