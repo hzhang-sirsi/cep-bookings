@@ -3,11 +3,28 @@
 (function ($, params) {
     let fieldIds = params.fieldIds;
 
-    function makeRequest(action, data) {
+    const makeRequest = (action, data) => {
         data.action = action;
         data._ajax_nonce = params._ajax.nonce[action];
         return $.post(params._ajax.url, data, 'json');
-    }
+    };
+    const convert12hto24h = (time12h) => {
+        time12h = time12h.trim();
+        const time = time12h.slice(0, time12h.length - 2).trim();
+        const modifier = time12h.slice(time12h.length - 2).trim();
+        let [hours, minutes] = time.split(':');
+        if (hours === '12') {
+            hours = '00';
+        }
+
+        [hours, minutes] = [parseInt(hours, 10), parseInt(minutes, 10)];
+        if (modifier.toLowerCase() === 'pm') {
+            hours += 12;
+        }
+
+        [hours, minutes] = [hours.toString().padStart(2, '0'), minutes.toString().padStart(2, '0')];
+        return `${hours}:${minutes}`;
+    };
 
     $(document).ready(function () {
         $('#' + fieldIds.searchButton).on('click', () => {
@@ -58,8 +75,8 @@
 
         $('#' + fieldIds.content).on($.modal.BEFORE_OPEN, function (event, modal) {
             $('#' + fieldIds.eventDate).val($('#EventStartDate').val());
-            $('#' + fieldIds.startTime).val($('#EventStartTime').val());
-            $('#' + fieldIds.endTime).val($('#EventEndTime').val());
+            $('#' + fieldIds.startTime).val(convert12hto24h($('#EventStartTime').val()));
+            $('#' + fieldIds.endTime).val(convert12hto24h($('#EventEndTime').val()));
         });
     });
 }(jQuery, roomPickerAjaxParams));

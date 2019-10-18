@@ -1,3 +1,22 @@
 .room-modal {
     max-width: 1000px;
+    height: 600px;
+    width: 750px;
+}
+
+.room-modal label {
+    min-width: 120px;
+}
+
+.room-modal div {
+    display: flex;
+}
+
+.room-modal .flex-row {
+    flex-direction: row;
+}
+
+.room-modal .search-control {
+    flex-direction: column;
+    padding-bottom: 3.0em;
 }

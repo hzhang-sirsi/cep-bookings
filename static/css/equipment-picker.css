@@ -1,3 +1,22 @@
 .equipment-modal {
     max-width: 1000px;
+    height: 600px;
+    width: 750px;
+}
+
+.equipment-modal label {
+    min-width: 120px;
+}
+
+.equipment-modal div {
+    display: flex;
+}
+
+.equipment-modal .flex-row {
+    flex-direction: row;
+}
+
+.equipment-modal .search-control {
+    flex-direction: column;
+    padding-bottom: 3.0em;
 }
