@@ -1,6 +1,6 @@
 'use strict';
 
-(function ($, params) {
+(function ($, vis, params) {
     let fieldIds = params.fieldIds;
 
     const makeRequest = (action, data) => {
@@ -27,16 +27,38 @@
     };
 
     $(document).ready(function () {
-        let selected = null;
+        let selected = params.selected;
+        let pending = null;
+
+        const updateValue = (newValue) => {
+            if (newValue === null) {
+                return;
+            }
+
+            try {
+                $('#' + fieldIds.summaryLabel).text(`${newValue.title} - ${newValue.date} - ${newValue.startTime} to ${newValue.endTime}`);
+                $('#' + fieldIds.value).val(JSON.stringify(newValue)).change();
+                selected = newValue;
+            } catch (e) {
+            }
+        };
 
         $('#' + fieldIds.searchButton).on('click', () => {
             (async function () {
                 let root = document.getElementById(fieldIds.results);
+
+                const [eventDate, startTime, endTime] = [
+                    $('#' + fieldIds.eventDate).val(),
+                    $('#' + fieldIds.startTime).val(),
+                    $('#' + fieldIds.endTime).val()
+                ];
+
                 makeRequest('cb_room_search', {
                     roomType: $('#' + fieldIds.roomType).val(),
-                    eventDate: $('#' + fieldIds.eventDate).val(),
-                    startTime: $('#' + fieldIds.startTime).val(),
-                    endTime: $('#' + fieldIds.endTime).val(),
+                    eventId: params.postId,
+                    eventDate: eventDate,
+                    startTime: startTime,
+                    endTime: endTime,
                 }).then((response) => {
                     if (!response.success) {
                         if ('error' in response && response.error) {
@@ -50,24 +72,63 @@
                         throw 'No rooms available.';
                     }
 
+                    // Create a DataSet (allows two way data-binding)
+                    let groups = new vis.DataSet([]);
+                    let items = new vis.DataSet([]);
+
+                    let startDate = new Date(eventDate + 'T00:00:00');
+                    let endDate = new Date(eventDate + 'T00:00:00').setDate(startDate.getDate() + 1);
+                    // Configuration for the Timeline
+                    let options = {
+                        width: '100%',
+                        height: '100%',
+                        start: startDate,
+                        end: endDate,
+                        moveable: false,
+                        groupTemplate: (group) => {
+                            const container = document.createElement('div');
+                            const label = document.createElement('label');
+                            label.textContent = group.content;
+                            container.appendChild(label);
+
+                            container.addEventListener('click', (e) => {
+                                container.classList.add('selected');
+
+                                pending = {
+                                    post_id: group.id,
+                                    title: group.content,
+                                    date: eventDate,
+                                    startTime: startTime,
+                                    endTime: endTime,
+                                };
+                            });
+                            return container;
+                        },
+                    };
+
                     root.innerHTML = '';
                     for (let post of response.data.posts) {
-                        let container = document.createElement('div');
-                        container.setAttribute('style', 'display: flex; flex-direction: column;');
+                        if (post.reservations !== undefined && post.reservations !== null) {
+                            for (let reservation of post.reservations) {
+                                let start = new Date(eventDate + 'T' + reservation.start_time);
+                                let end = new Date(eventDate + 'T' + reservation.end_time);
 
-                        let image = document.createElement('img');
-                        image.setAttribute('src', post['thumbnail']);
-                        image.setAttribute('style', 'max-width: 150px; max-height: 100px;');
-                        let label = document.createElement('label');
-                        label.textContent = post['title'];
-                        container.appendChild(image);
-                        container.appendChild(label);
-                        container.addEventListener('click', (e) => {
-                            selected = post;
-                        });
+                                items.add({
+                                    group: post.id,
+                                    id: reservation.event_id,
+                                    content: reservation.event_name,
+                                    start: start,
+                                    end: end
+                                });
+                            }
+                        }
 
-                        root.appendChild(container);
+                        groups.add({id: post.id, content: post.title})
                     }
+
+                    root.innerHTML = '';
+                    // Create a Timeline
+                    let timeline = new vis.Timeline(root, items, groups, options);
                 }).catch((error) => {
                     root.innerHTML = '';
 
@@ -80,25 +141,22 @@
         });
 
         $('#' + fieldIds.saveButton).on('click', () => {
-            $('#' + fieldIds.value).val(JSON.stringify({
-                post_id: selected.id,
-                title: selected.title,
-                date: $('#' + fieldIds.eventDate).val(),
-                startTime: $('#' + fieldIds.startTime).val(),
-                endTime: $('#' + fieldIds.endTime).val(),
-            })).change();
+            updateValue(pending);
             $.modal.close();
         });
-
-        $('#' + fieldIds.value).on('change', () => {
-            const data = JSON.parse($('#' + fieldIds.value).val());
-            $('#' + fieldIds.summaryLabel).text(`${data.title} - ${data.date} - ${data.startTime} to ${data.endTime}`);
-        });
+        updateValue(selected);
 
         $('#' + fieldIds.content).on($.modal.BEFORE_OPEN, function (event, modal) {
-            $('#' + fieldIds.eventDate).val($('#EventStartDate').val());
-            $('#' + fieldIds.startTime).val(convert12hto24h($('#EventStartTime').val()));
-            $('#' + fieldIds.endTime).val(convert12hto24h($('#EventEndTime').val()));
+            let [eventDate, startTime, endTime] = [$('#' + fieldIds.eventDate), $('#' + fieldIds.startTime), $('#' + fieldIds.endTime)];
+            if (selected !== null) {
+                eventDate.val(selected.date);
+                startTime.val(selected.startTime);
+                endTime.val(selected.endTime);
+            } else {
+                eventDate.val($('#EventStartDate').val());
+                startTime.val(convert12hto24h($('#EventStartTime').val()));
+                endTime.val(convert12hto24h($('#EventEndTime').val()));
+            }
         });
     });
-}(jQuery, roomPickerAjaxParams));
+}(jQuery, vis, roomPickerAjaxParams));

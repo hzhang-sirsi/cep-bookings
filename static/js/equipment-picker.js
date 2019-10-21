@@ -53,7 +53,7 @@
 
                     for (let post of response.data.posts) {
                         let container = document.createElement('div');
-                        container.setAttribute('style', 'display: flex; flex-direction: column; max-width: 150px;')
+                        container.setAttribute('style', 'display: flex; flex-direction: column; max-width: 150px;');
 
                         let image = document.createElement('img');
                         image.setAttribute('src', post['thumbnail']);

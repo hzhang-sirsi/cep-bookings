@@ -1,3 +1,7 @@
+.room-summary-label {
+    margin: 0 2em 0 0;
+}
+
 .room-modal {
     max-width: 1000px;
     height: 600px;
@@ -7,6 +11,7 @@
 .room-modal > div {
     width: 100%;
     height: 100%;
+    display: flex;
 }
 
 .room-modal div.footer {
@@ -17,7 +22,11 @@
     min-width: 120px;
 }
 
-.room-modal div {
+.room-modal > div > div:not(.content) {
+    display: flex;
+}
+
+.room-modal > div > div:not(.content) div {
     display: flex;
 }
 
@@ -35,4 +44,8 @@
 
 .room-modal .search-control {
     flex-direction: column;
+}
+
+.room-modal .selected {
+    background: #1e6abc;
 }

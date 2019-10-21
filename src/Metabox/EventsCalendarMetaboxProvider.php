@@ -5,7 +5,6 @@ namespace SirsiDynix\CEPBookings\Metabox;
 
 
 use SirsiDynix\CEPBookings\Metabox\Fields\MetaboxFieldDefinition;
-use SirsiDynix\CEPBookings\Metabox\Inputs\EquipmentPicker;
 use SirsiDynix\CEPBookings\Metabox\Inputs\RoomPicker;
 use SirsiDynix\CEPBookings\Rest\Script\ClientScriptHelper;
 use SirsiDynix\CEPBookings\Wordpress;
@@ -24,7 +23,7 @@ class EventsCalendarMetaboxProvider extends MetadataMetaboxProvider
     {
         parent::__construct($wordpress, $wordpressEvents, [
             new MetaboxFieldDefinition('room_bookings', 'Room Bookings', new RoomPicker($wordpress, $roomPickerAjaxScript)),
-            new MetaboxFieldDefinition('equipment_reservations', 'Equipment Reservations', new EquipmentPicker($wordpress, $equipmentPickerAjaxScript)),
+            // new MetaboxFieldDefinition('equipment_reservations', 'Equipment Reservations', new EquipmentPicker($wordpress, $equipmentPickerAjaxScript)),
         ]);
     }
 

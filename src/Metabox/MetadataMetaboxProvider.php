@@ -11,7 +11,6 @@ use SirsiDynix\CEPBookings\Utils;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\HtmlElement;
 use Windwalker\Html\Form\InputElement;
-use Windwalker\Html\Grid\Grid;
 use WP_Post;
 
 /**
@@ -62,21 +61,21 @@ class MetadataMetaboxProvider
     private function renderMetabox()
     {
         return function (WP_Post $post) {
-            $rootElem = Grid::create([
-                'class' => 'form-table'
-            ])->setColumns(['key', 'value']);
+            $contents = [];
 
             foreach ($this->fields as $field) {
-                $rootElem->addRow();
-
                 $fieldId = Utils::generateUniqueIdentifier();
-                $rootElem->setRowCell('key', new HtmlElement('label', $field->friendlyName, [
-                    'for' => $fieldId
-                ]));
-                $rootElem->setRowCell('value', $this->resolveType($post, $field, $fieldId));
+
+                $key = new HtmlElement('label', $field->friendlyName, [
+                    'for' => $fieldId,
+                    'style' => 'max-width: 250px; flex-grow: 1;',
+                ]);
+                $value = $this->resolveType($post, $field, $fieldId);
+
+                array_push($contents, new HtmlElement('div', [$key, $value], ['style' => 'display: flex; align-items: center; flex-grow: 1; padding: 1em;']));
             }
 
-            echo $rootElem;
+            echo new HtmlElement('div', $contents, ['class' => 'form-table', 'style' => 'display: flex; flex-direction: column; width: 100%;']);
         };
     }
 

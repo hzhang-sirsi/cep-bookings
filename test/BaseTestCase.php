@@ -6,6 +6,7 @@ namespace SirsiDynix\CEPBookings;
 
 use DI\Container;
 use PHPUnit\Framework\TestCase;
+use SirsiDynix\CEPBookings\Modules\DatabaseModule;
 
 class BaseTestCase extends TestCase
 {
@@ -20,6 +21,7 @@ class BaseTestCase extends TestCase
 
         $this->container = Plugin::getContainer();
         $this->container->set(Wordpress::class, $this->createMock(Wordpress::class));
+        $this->container->set(DatabaseModule::class, $this->createMock(DatabaseModule::class));
     }
 
     protected function tearDown(): void

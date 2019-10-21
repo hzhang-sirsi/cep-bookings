@@ -12,6 +12,7 @@ use SirsiDynix\CEPBookings\Wordpress;
 use SirsiDynix\CEPBookings\Wordpress\Ajax\EquipmentSearchHandler;
 use SirsiDynix\CEPBookings\Wordpress\Ajax\RoomSearchHandler;
 use SirsiDynix\CEPBookings\Wordpress\WordpressEvents;
+use WP_Post;
 use function DI\autowire;
 use function DI\get;
 
@@ -50,12 +51,17 @@ class MetaboxEditorModule extends AbstractModule
                 $this->container->get(ECPIntegration::class)->getEventsPostType());
         });
 
+        $wpEvents->addHandler('save_post', function (int $post_id, WP_Post $post, bool $update = null) {
+            $this->container->get(EventsCalendarMetaboxProvider::class)->savePostCallback($post_id, $post, $update);
+        });
+
         $wpEvents->addHandler('admin_enqueue_scripts', function () use ($wordpress) {
             $wordpress->wp_register_style('jquery-modal-css', '//cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css');
             $wordpress->wp_register_script('jquery-modal-js', '//cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js', ['jquery']);
             $wordpress->wp_register_style('jquery-timepicker-css', '//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css');
-            $wordpress->wp_register_script('jquery-timepicker-js', '//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js');
-            $wordpress->wp_register_script('moment-js', '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js');
+            $wordpress->wp_register_script('jquery-timepicker-js', '//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js', ['jquery']);
+            $wordpress->wp_register_style('vis-js-css', '//cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css');
+            $wordpress->wp_register_script('vis-js', '//cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js', ['jquery']);
         });
     }
 }
