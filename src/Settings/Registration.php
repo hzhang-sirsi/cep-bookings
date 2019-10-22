@@ -6,7 +6,6 @@ namespace SirsiDynix\CEPBookings\Settings;
 use SirsiDynix\CEPBookings\ECP\ECPIntegration;
 use SirsiDynix\CEPBookings\Wordpress;
 use SirsiDynix\CEPBookings\Wordpress\Menu\WPMenuPage;
-use SirsiDynix\CEPBookings\Wordpress\Settings\WPSettingsPage;
 use SirsiDynix\CEPBookings\Wordpress\Settings\WPSettingsSection;
 use Windwalker\Html\Form\InputElement;
 
@@ -17,7 +16,6 @@ class Registration
     private const OPTION_ECP_SYNC_FIELD = 'cep_marketo_sync_option';
     private const OPTION_ECP_ROOM_FIELD = 'cep_marketo_room_option';
 
-    private const OPTIONS_SETTINGS_PAGE = 'writing';
     private const OPTIONS_SETTINGS_SECTION = 'cep_marketo_settings';
     private const OPTIONS_MARKETO_API_KEY = 'marketo_api_key';
     private const OPTIONS_MARKETO_API_SECRET = 'marketo_api_secret';

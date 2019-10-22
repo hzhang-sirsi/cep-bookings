@@ -9,25 +9,25 @@ use SirsiDynix\CEPBookings\Metabox\MetaboxFieldDefinition;
 use Windwalker\Dom\DomElement;
 use WP_Post;
 
-interface Input
+abstract class Input
 {
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store
+     */
+    abstract public static function getFields(string $field);
+
+    /**
+     * @param string $field
+     * @return string[] Fieldnames to store as arrays
+     */
+    abstract public static function getArrayFields(string $field);
+
     /**
      * @param WP_Post $post
      * @param MetaboxFieldDefinition $field
      * @param string $fieldId
      * @return DomElement
      */
-    public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId);
-
-    /**
-     * @param string $field
-     * @return string[] Fieldnames to store
-     */
-    public function getFields(string $field);
-
-    /**
-     * @param string $field
-     * @return string[] Fieldnames to store
-     */
-    public function getArrayFields(string $field);
+    abstract public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId);
 }

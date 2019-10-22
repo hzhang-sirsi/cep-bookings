@@ -14,8 +14,12 @@ use SirsiDynix\CEPBookings\Wordpress;
  */
 class WordpressEvents
 {
+    /**
+     * List of valid events. This protects against bugs caused by typos
+     */
     private const SUBSCRIBED_EVENTS = [
         'init',
+        'admin_enqueue_scripts',
         'admin_init',
         'admin_menu',
         'plugins_loaded',
@@ -35,6 +39,7 @@ class WordpressEvents
 
     public function registerHandlers()
     {
+        $this->proxy->freeze();
         foreach (self::SUBSCRIBED_EVENTS as $eventName) {
             foreach ($this->proxy->getPriorities($eventName) as $priority) {
                 $this->wordpress->add_action($eventName, $this->dispatch($eventName, $priority), $priority);

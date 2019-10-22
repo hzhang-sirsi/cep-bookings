@@ -25,7 +25,13 @@ class Wordpress
         return $wp_version;
     }
 
-    public function add_action(string $event, callable $function, int $priority = 10, int $nargs = 2)
+    public static function get_database()
+    {
+        global $wpdb;
+        return $wpdb;
+    }
+
+    public function add_action(string $event, $function, int $priority = 10, int $nargs = 2)
     {
         return add_action($event, $function, $priority, $nargs);
     }
@@ -85,7 +91,6 @@ class Wordpress
         return $query->get_posts();
     }
 
-
     public function update_post_meta(int $post_id, string $key, string $value, string $prev = null)
     {
         return update_post_meta($post_id, $key, $value, $prev);
@@ -126,6 +131,11 @@ class Wordpress
         return add_submenu_page($parentSlug, $subMenuPage->page_title, $subMenuPage->menu_title, $subMenuPage->capability, $subMenuPage->menu_slug, $subMenuPage->function);
     }
 
+    public function wp_register_script($handle, $src = '', $deps = array(), $ver = false, $in_footer = false)
+    {
+        return wp_register_script($handle, $src, $deps, $ver, $in_footer);
+    }
+
     public function wp_enqueue_script($handle, $src = '', $deps = array(), $ver = false, $in_footer = false)
     {
         return wp_enqueue_script($handle, $src, $deps, $ver, $in_footer);
@@ -147,5 +157,40 @@ class Wordpress
             $plugin_url = Plugin::getRoot();
         }
         return plugins_url($path, $plugin_url);
+    }
+
+    public function get_current_screen()
+    {
+        return get_current_screen();
+    }
+
+    public function add_thickbox()
+    {
+        return add_thickbox();
+    }
+
+    public function wp_register_style($handle, $src = '', $deps = array(), $ver = false, $media = 'all')
+    {
+        return wp_register_style($handle, $src, $deps, $ver, $media);
+    }
+
+    public function wp_enqueue_style($handle, $src = '', $deps = array(), $ver = false, $media = 'all')
+    {
+        return wp_enqueue_style($handle, $src, $deps, $ver, $media);
+    }
+
+    public function wp_localize_script(string $handle, string $object_name, array $l10n)
+    {
+        return wp_localize_script($handle, $object_name, $l10n);
+    }
+
+    public function admin_url($path = '', $scheme = 'admin')
+    {
+        return admin_url($path, $scheme);
+    }
+
+    public function wp_create_nonce($action)
+    {
+        return wp_create_nonce($action);
     }
 }

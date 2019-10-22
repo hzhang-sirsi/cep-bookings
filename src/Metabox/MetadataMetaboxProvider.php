@@ -6,6 +6,7 @@ namespace SirsiDynix\CEPBookings\Metabox;
 
 use Closure;
 use SirsiDynix\CEPBookings\Metabox\Inputs\Input;
+use SirsiDynix\CEPBookings\Utils;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\HtmlElement;
 use Windwalker\Html\Form\InputElement;
@@ -13,6 +14,9 @@ use Windwalker\Html\Grid\Grid;
 use WP_Post;
 
 /**
+ * Constructs a metabox that takes an array of MetaboxFieldDefinition. These fields will be
+ * editable, controlled by the MetaboxFieldDefinition.
+ *
  * @property MetaboxFieldDefinition[] fields
  */
 class MetadataMetaboxProvider
@@ -64,7 +68,7 @@ class MetadataMetaboxProvider
             foreach ($this->fields as $field) {
                 $rootElem->addRow();
 
-                $fieldId = 'input-cep-bookings-' . $field->name;
+                $fieldId = Utils::generateUniqueIdentifier();
                 $rootElem->setRowCell('key', new HtmlElement('label', $field->friendlyName, [
                     'for' => $fieldId
                 ]));
