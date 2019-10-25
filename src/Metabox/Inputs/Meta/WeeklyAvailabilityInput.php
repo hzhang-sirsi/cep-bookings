@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
-use SirsiDynix\CEPBookings\Metabox\MetaboxFieldDefinition;
 use Windwalker\Dom\DomElement;
 use Windwalker\Dom\HtmlElement;
 use Windwalker\Html\Form\InputElement;
@@ -43,7 +42,7 @@ TAG;
 /**
  * @property string $type
  */
-class WeeklyAvailabilityInput extends Input
+class WeeklyAvailabilityInput extends PostMetaInput
 {
     /**
      * @param string $field
@@ -72,26 +71,26 @@ class WeeklyAvailabilityInput extends Input
 
     /**
      * @param WP_Post $post
-     * @param MetaboxFieldDefinition $field
+     * @param string $fieldName
      * @param string $fieldId
      * @return DomElement
      */
-    public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
+    public function render(WP_Post $post, string $fieldName, string $fieldId)
     {
         return new HtmlElement('div', [
             $this->generateRow([
-                $this->generateField($post, 'Start Date', 'date', $field->name . '_startDate'),
-                $this->generateField($post, 'End Date', 'date', $field->name . '_endDate'),
+                $this->generateField($post, 'Start Date', 'date', $fieldName . '_startDate'),
+                $this->generateField($post, 'End Date', 'date', $fieldName . '_endDate'),
             ]),
             $this->generateRow([
                 new HtmlElement('div', [
                     new HtmlElement('label', 'Days of Week', ['style' => 'flex-grow: 1;']),
-                    $this->generateDayField($post, $field->name),
+                    $this->generateDayField($post, $fieldName),
                 ], ['style' => 'display: flex; flex-direction: column; flex-grow: 1;']),
             ]),
             $this->generateRow([
-                $this->generateField($post, 'Start Time', 'time', $field->name . '_startTime'),
-                $this->generateField($post, 'End Time', 'time', $field->name . '_endTime'),
+                $this->generateField($post, 'Start Time', 'time', $fieldName . '_startTime'),
+                $this->generateField($post, 'End Time', 'time', $fieldName . '_endTime'),
             ]),
         ], ['style' => 'display: flex; flex-direction: column; max-width: 500px; width: 100%;']);
     }

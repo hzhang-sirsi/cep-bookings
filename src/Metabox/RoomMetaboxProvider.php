@@ -5,6 +5,7 @@ namespace SirsiDynix\CEPBookings\Metabox;
 
 
 use SirsiDynix\CEPBookings\ECP\ECPIntegration;
+use SirsiDynix\CEPBookings\Metabox\Fields\MetaboxFieldDefinition;
 use SirsiDynix\CEPBookings\Metabox\Inputs\MediaGalleryPicker;
 use SirsiDynix\CEPBookings\Metabox\Inputs\WeeklyAvailabilityInput;
 use SirsiDynix\CEPBookings\Metabox\Inputs\WPPostSelectInput;

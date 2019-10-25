@@ -5,6 +5,7 @@ namespace SirsiDynix\CEPBookings\Wordpress\Ajax;
 
 
 use SirsiDynix\CEPBookings\Wordpress;
+use wpdb;
 
 class RoomSearchHandler extends AjaxHandler
 {
@@ -16,6 +17,7 @@ class RoomSearchHandler extends AjaxHandler
     public function handler(array $postData)
     {
         $roomType = intval($postData['roomType']);
+        $eventId = intval($postData['eventId']);
         $eventDate = $postData['eventDate'];
         $startTime = $postData['startTime'];
         $endTime = $postData['endTime'];
@@ -59,17 +61,26 @@ FROM (
         SELECT post_id, meta_value AS weekdays_available FROM {$wpdb->postmeta}
         WHERE meta_key = 'availability_weekdaysAvailable'
     ) weekdays ON rooms.id = weekdays.post_id
+    LEFT JOIN (
+        SELECT `room_id`, COUNT(*) AS conflicts FROM {$wpdb->prefix}cep_bookings_room_reservations
+        WHERE event_id != %d AND `date` = %s AND (start_time <= %s AND %s <= end_time)
+        GROUP BY `room_id`
+    ) reservations ON rooms.id = reservations.room_id
 WHERE
     (start_dates.start_date IS NULL OR DATE(%s) >= start_dates.start_date)
     AND (end_dates.end_date IS NULL OR DATE(%s) <= end_dates.end_date)
     AND (start_times.start_time IS NULL OR TIME_TO_SEC(%s) >= start_times.start_time)
     AND (end_times.end_time IS NULL OR TIME_TO_SEC(%s) <= end_times.end_time)
-    AND weekdays.weekdays_available LIKE CONCAT('%', DAYNAME(%s), '%')
+    AND weekdays.weekdays_available LIKE CONCAT('%%', DAYNAME(%s), '%%')
+    -- AND (reservations.conflicts IS NULL)
     AND room_types.meta_value = %s
 SQL;
-        $query = $wpdb->prepare($queryString, [$eventDate, $eventDate, $startTime, $endTime, $eventDate, $roomType]);
+        $query = $wpdb->prepare($queryString, [$eventId, $eventDate, $endTime, $startTime, $eventDate, $eventDate, $startTime, $endTime, $eventDate, $roomType]);
         $posts = $wpdb->get_results($query);
 
+        $reservations_by_room = $this->getReservationsByRoom($wpdb, $eventDate, array_map(function ($e) {
+            return intval($e->id);
+        }, $posts));
         foreach ($posts as $post) {
             array_push($response['posts'], [
                 'id' => intval($post->id),
@@ -79,9 +90,34 @@ SQL;
                 'end_date' => $post->end_date,
                 'start_time' => $post->start_time,
                 'end_time' => $post->end_time,
+                'reservations' => $reservations_by_room[intval($post->id)],
             ]);
         }
 
         return $response;
+    }
+
+    private function getReservationsByRoom(wpdb $wpdb, string $eventDate, array $roomIds)
+    {
+        $reservations_by_room = [];
+
+        if (count($roomIds) > 0) {
+            $roomIdsStr = join(', ', $roomIds);
+            $queryString = <<<SQL
+SELECT res.room_id, res.event_id, posts.post_title AS event_name, res.start_time, res.end_time
+FROM {$wpdb->prefix}cep_bookings_room_reservations res
+    JOIN {$wpdb->posts} posts ON res.event_id = posts.ID
+WHERE `date` = %s AND room_id IN ({$roomIdsStr}) AND posts.post_type = 'tribe_events'
+SQL;
+            $reservations = $wpdb->get_results($wpdb->prepare($queryString, [$eventDate]));
+            foreach ($reservations as $reservation) {
+                if (!array_key_exists($reservation->room_id, $reservations_by_room)) {
+                    $reservations_by_room[$reservation->room_id] = [];
+                }
+                array_push($reservations_by_room[$reservation->room_id], $reservation);
+            }
+        }
+
+        return $reservations_by_room;
     }
 }

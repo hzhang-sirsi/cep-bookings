@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
-use SirsiDynix\CEPBookings\Metabox\MetaboxFieldDefinition;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\DomElement;
 use Windwalker\Dom\HtmlElement;
@@ -16,7 +15,7 @@ use WP_Post;
 /**
  * @property string $type
  */
-class MediaGalleryPicker extends Input
+class MediaGalleryPicker extends PostMetaInput
 {
     /**
      * @var Wordpress
@@ -54,16 +53,16 @@ class MediaGalleryPicker extends Input
 
     /**
      * @param WP_Post $post
-     * @param MetaboxFieldDefinition $field
+     * @param string $fieldName
      * @param string $fieldId
      * @return DomElement
      */
-    public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
+    public function render(WP_Post $post, string $fieldName, string $fieldId)
     {
         $this->wordpress->wp_enqueue_media();
         $this->wordpress->wp_enqueue_script('media-gallery-picker', $this->wordpress->plugins_url('/static/js/media-gallery-picker.js'));
 
-        $imageMeta = $this->wordpress->wp_get_attachment_metadata($post->{$field->name . '_imageId'});
+        $imageMeta = $this->wordpress->wp_get_attachment_metadata($post->{$fieldName . '_imageId'});
         if ($imageMeta) {
             $width = $imageMeta['width'];
             $height = $imageMeta['height'];
@@ -76,7 +75,7 @@ class MediaGalleryPicker extends Input
             new HtmlElement('div', [
                 new HtmlElement('img', [], [
                         'id' => 'image-preview',
-                        'src' => wp_get_attachment_image_src($post->{$field->name . '_imageId'}, 'thumbnail')[0],
+                        'src' => wp_get_attachment_image_src($post->{$fieldName . '_imageId'}, 'thumbnail')[0],
                         'style' => 'width: auto; max-width: 100%; height: 100%; max-height: 100%; object-fit: contain;']
                 ),
             ], ['style' => 'flex-grow: 1; max-width: 200px; max-height: 150px;']),
@@ -88,9 +87,9 @@ class MediaGalleryPicker extends Input
                     new HtmlElement('span', $height, ['id' => 'span-image-height']),
                     'px',
                 ]),
-                new InputElement('button', $field->name . '_selectImage', 'Select Image', ['id' => 'select-image-btn', 'class' => 'button button-primary button-small']),
+                new InputElement('button', $fieldName . '_selectImage', 'Select Image', ['id' => 'select-image-btn', 'class' => 'button button-primary button-small']),
             ], ['style' => 'display: flex; flex-direction: column; justify-content: space-between; margin: 5px;']),
-            new InputElement('hidden', $field->name . '_imageId', $post->{$field->name . '_imageId'}, ['id' => 'input-image-id']),
+            new InputElement('hidden', $fieldName . '_imageId', $post->{$fieldName . '_imageId'}, ['id' => 'input-image-id']),
         ], ['style' => 'display: flex; flex-direction: row;']);
     }
 }

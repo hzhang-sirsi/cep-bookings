@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
-use SirsiDynix\CEPBookings\Metabox\MetaboxFieldDefinition;
 use SirsiDynix\CEPBookings\Rest\Script\ClientScriptHelper;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\DomElement;
@@ -60,11 +59,11 @@ class EquipmentPicker extends Input
 
     /**
      * @param WP_Post $post
-     * @param MetaboxFieldDefinition $field
+     * @param string $fieldName
      * @param string $fieldId
      * @return DomElement
      */
-    public function render(WP_Post $post, MetaboxFieldDefinition $field, string $fieldId)
+    public function render(WP_Post $post, string $fieldName, string $fieldId)
     {
         $this->wordpress->wp_enqueue_style('jquery-modal-css');
         $this->wordpress->wp_enqueue_script('jquery-modal-js');
@@ -72,8 +71,8 @@ class EquipmentPicker extends Input
         $this->wordpress->wp_enqueue_script('jquery-timepicker-js');
         $this->wordpress->wp_enqueue_style('equipment-picker-css', $this->wordpress->plugins_url('/static/css/equipment-picker.css'));
 
-        $startTimeFieldId = $field->name . '-start-time';
-        $endTimeFieldId = $field->name . '-end-time';
+        $startTimeFieldId = $fieldId . '-start-time';
+        $endTimeFieldId = $fieldId . '-end-time';
         $eventDateFieldId = $fieldId . '-date';
         $equipmentTypeFieldId = $fieldId . '-equipment-type';
         $searchButtonFieldId = $fieldId . '-search-button';
@@ -99,35 +98,48 @@ class EquipmentPicker extends Input
                 new HtmlElement('div', [
                     new HtmlElement('h1', ['Equipment']),
                     new HtmlElement('div', [
-                        new HtmlElement('label', ['Equipment Type'], ['style' => 'flex-basis: 100px;']),
-                        (new WPPostSelectInput($this->wordpress, 'equipment_type'))->render($post, $field, $equipmentTypeFieldId),
-                    ], ['style' => 'display: flex; align-items: center;']),
-                    new HtmlElement('div', [
-                        new HtmlElement('label', ['Date'], ['style' => 'flex-basis: 100px;']),
-                        new InputElement('date', '', '', ['id' => $eventDateFieldId]),
-                    ], ['style' => 'display: flex; align-items: center;']),
-                    new HtmlElement('div', [
+                        new HtmlElement('div', [
+                            new HtmlElement('label', ['Equipment Type']),
+                            (new WPPostSelectInput($this->wordpress, 'equipment_type'))->render($post, $fieldName, $equipmentTypeFieldId),
+                        ], ['style' => 'align-items: center;']),
+                        new HtmlElement('div', [
+                            new HtmlElement('label', ['Date']),
+                            new InputElement('date', '', '', ['id' => $eventDateFieldId]),
+                        ], ['style' => 'align-items: center;']),
                         new HtmlElement('div', [
                             new HtmlElement('div', [
-                                new HtmlElement('label', ['Start Time'], ['style' => 'width: 100px;']),
-                                new InputElement('time', '', '', ['id' => $startTimeFieldId]),
-                            ], ['style' => 'display: flex; flex-direction: column;']),
+                                new HtmlElement('div', [
+                                    new HtmlElement('label', ['Start Time']),
+                                    new InputElement('time', '', '', ['id' => $startTimeFieldId]),
+                                ], ['style' => 'flex-direction: column;']),
+                                new HtmlElement('div', [
+                                    new HtmlElement('label', ['End Time']),
+                                    new InputElement('time', '', '', ['id' => $endTimeFieldId]),
+                                ], ['style' => 'flex-direction: column;']),
+                            ], ['class' => 'flex-row']),
                             new HtmlElement('div', [
-                                new HtmlElement('label', ['End Time'], ['style' => 'width: 100px;']),
-                                new InputElement('time', '', '', ['id' => $endTimeFieldId]),
-                            ], ['style' => 'display: flex; flex-direction: column;']),
-                        ], ['style' => 'display: flex; flex-direction: row;']),
-                        new HtmlElement('div', [
-                            new HtmlElement('a', ['Find Equipment'], ['class' => 'button', 'id' => $searchButtonFieldId])
-                        ], ['style' => 'align-self: flex-end;'])
-                    ], ['style' => 'display: flex; justify-content: space-between;']),
+                                new HtmlElement('a', ['Find Equipment'], ['class' => 'button', 'id' => $searchButtonFieldId])
+                            ], ['style' => 'align-self: flex-end;'])
+                        ], ['style' => 'justify-content: space-between;']),
+                    ], ['class' => 'search-control']),
                     new HtmlElement('div', [], ['id' => $resultsContentFieldId]),
-                ], ['style' => 'display: flex; flex-direction: column;']),
-            ], ['id' => $contentId, 'class' => 'equipment-modal', 'style' => 'display: none; width: 750px; height: 600px;']),
+                ], ['style' => 'flex-direction: column;']),
+            ], ['id' => $contentId, 'class' => 'equipment-modal', 'style' => 'display: none;']),
             new HtmlElement('a', ['Edit'], [
                 'class' => 'button', 'href' => '#' . $contentId,
                 'rel' => 'modal:open', 'id' => $editButtonFieldId,
             ]),
         ]);
+    }
+
+    /**
+     * @param Wordpress $wordpress
+     * @param WP_Post $post
+     * @param string $fieldName
+     * @return void
+     */
+    public function saveFields(Wordpress $wordpress, WP_Post $post, string $fieldName)
+    {
+        // TODO: Implement saveFields() method.
     }
 }

@@ -1,65 +1,162 @@
 'use strict';
 
-(function ($, params) {
+(function ($, vis, params) {
     let fieldIds = params.fieldIds;
 
-    function makeRequest(action, data) {
+    const makeRequest = (action, data) => {
         data.action = action;
         data._ajax_nonce = params._ajax.nonce[action];
-        return $.post(params._ajax.url, data, 'json');
-    }
+        return Promise.resolve($.post(params._ajax.url, data, 'json'));
+    };
+    const convert12hto24h = (time12h) => {
+        time12h = time12h.trim();
+        const time = time12h.slice(0, time12h.length - 2).trim();
+        const modifier = time12h.slice(time12h.length - 2).trim();
+        let [hours, minutes] = time.split(':');
+        if (hours === '12') {
+            hours = '00';
+        }
+
+        [hours, minutes] = [parseInt(hours, 10), parseInt(minutes, 10)];
+        if (modifier.toLowerCase() === 'pm') {
+            hours += 12;
+        }
+
+        [hours, minutes] = [hours.toString().padStart(2, '0'), minutes.toString().padStart(2, '0')];
+        return `${hours}:${minutes}`;
+    };
 
     $(document).ready(function () {
+        let selected = params.selected;
+        let pending = null;
+
+        const updateValue = (newValue) => {
+            if (newValue === null) {
+                return;
+            }
+
+            try {
+                $('#' + fieldIds.summaryLabel).text(`${newValue.title} - ${newValue.date} - ${newValue.startTime} to ${newValue.endTime}`);
+                $('#' + fieldIds.value).val(JSON.stringify(newValue)).change();
+                selected = newValue;
+            } catch (e) {
+            }
+        };
+
         $('#' + fieldIds.searchButton).on('click', () => {
             (async function () {
-                await (makeRequest(
-                        'cb_room_search', {
-                            roomType: $('#' + fieldIds.roomType).val(),
-                            eventDate: $('#' + fieldIds.eventDate).val(),
-                            startTime: $('#' + fieldIds.startTime).val(),
-                            endTime: $('#' + fieldIds.endTime).val(),
-                        }).then(function handleResponse(response) {
-                        if (!response.success) {
-                            if ('error' in response && response.error) {
-                                throw response.error;
-                            } else {
-                                throw "Unknown error occurred while processing your request";
-                            }
-                        }
+                let root = document.getElementById(fieldIds.results);
 
-                        let root = document.getElementById(fieldIds.results);
-                        root.innerHTML = '';
+                const [eventDate, startTime, endTime] = [
+                    $('#' + fieldIds.eventDate).val(),
+                    $('#' + fieldIds.startTime).val(),
+                    $('#' + fieldIds.endTime).val()
+                ];
 
-                        if (response.data.posts.length > 0) {
-                            for (let post of response.data.posts) {
-                                let container = document.createElement('div');
-                                container.setAttribute('style', 'display: flex; flex-direction: column;')
-
-                                let image = document.createElement('img');
-                                image.setAttribute('src', post['thumbnail']);
-                                image.setAttribute('style', 'max-width: 150px; max-height: 100px;');
-                                let label = document.createElement('label');
-                                label.textContent = post['title'];
-                                container.appendChild(image);
-                                container.appendChild(label);
-
-                                root.appendChild(container);
-                            }
+                makeRequest('cb_room_search', {
+                    roomType: $('#' + fieldIds.roomType).val(),
+                    eventId: params.postId,
+                    eventDate: eventDate,
+                    startTime: startTime,
+                    endTime: endTime,
+                }).then((response) => {
+                    if (!response.success) {
+                        if ('error' in response && response.error) {
+                            throw response.error;
                         } else {
-                            let error = document.createElement('label');
-                            error.textContent = 'No rooms available.';
-
-                            root.appendChild(error);
+                            throw 'Unknown error occurred while processing your request';
                         }
-                    })
-                );
+                    }
+
+                    if (response.data.posts.length === 0) {
+                        throw 'No rooms available.';
+                    }
+
+                    // Create a DataSet (allows two way data-binding)
+                    let groups = new vis.DataSet([]);
+                    let items = new vis.DataSet([]);
+
+                    let startDate = new Date(eventDate + 'T00:00:00');
+                    let endDate = new Date(eventDate + 'T00:00:00').setDate(startDate.getDate() + 1);
+                    // Configuration for the Timeline
+                    let options = {
+                        width: '100%',
+                        height: '100%',
+                        start: startDate,
+                        end: endDate,
+                        moveable: false,
+                        groupTemplate: (group) => {
+                            const container = document.createElement('div');
+                            const label = document.createElement('label');
+                            label.textContent = group.content;
+                            container.appendChild(label);
+
+                            container.addEventListener('click', (e) => {
+                                container.classList.add('selected');
+
+                                pending = {
+                                    post_id: group.id,
+                                    title: group.content,
+                                    date: eventDate,
+                                    startTime: startTime,
+                                    endTime: endTime,
+                                };
+                            });
+                            return container;
+                        },
+                    };
+
+                    root.innerHTML = '';
+                    for (let post of response.data.posts) {
+                        if (post.reservations !== undefined && post.reservations !== null) {
+                            for (let reservation of post.reservations) {
+                                let start = new Date(eventDate + 'T' + reservation.start_time);
+                                let end = new Date(eventDate + 'T' + reservation.end_time);
+
+                                items.add({
+                                    group: post.id,
+                                    id: reservation.event_id,
+                                    content: reservation.event_name,
+                                    start: start,
+                                    end: end
+                                });
+                            }
+                        }
+
+                        groups.add({id: post.id, content: post.title})
+                    }
+
+                    root.innerHTML = '';
+                    // Create a Timeline
+                    let timeline = new vis.Timeline(root, items, groups, options);
+                }).catch((error) => {
+                    root.innerHTML = '';
+
+                    let errorElem = document.createElement('label');
+                    errorElem.textContent = error.toString();
+
+                    root.appendChild(errorElem);
+                });
             })();
         });
 
+        $('#' + fieldIds.saveButton).on('click', () => {
+            updateValue(pending);
+            $.modal.close();
+        });
+        updateValue(selected);
+
         $('#' + fieldIds.content).on($.modal.BEFORE_OPEN, function (event, modal) {
-            $('#' + fieldIds.eventDate).val($('#EventStartDate').val());
-            $('#' + fieldIds.startTime).val($('#EventStartTime').val());
-            $('#' + fieldIds.endTime).val($('#EventEndTime').val());
+            let [eventDate, startTime, endTime] = [$('#' + fieldIds.eventDate), $('#' + fieldIds.startTime), $('#' + fieldIds.endTime)];
+            if (selected !== null) {
+                eventDate.val(selected.date);
+                startTime.val(selected.startTime);
+                endTime.val(selected.endTime);
+            } else {
+                eventDate.val($('#EventStartDate').val());
+                startTime.val(convert12hto24h($('#EventStartTime').val()));
+                endTime.val(convert12hto24h($('#EventEndTime').val()));
+            }
         });
     });
-}(jQuery, roomPickerAjaxParams));
+}(jQuery, vis, roomPickerAjaxParams));

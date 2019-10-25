@@ -2,10 +2,12 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPBookings\Metabox;
+namespace SirsiDynix\CEPBookings\Metabox\Fields;
 
 
 use SirsiDynix\CEPBookings\Metabox\Inputs\Input;
+use SirsiDynix\CEPBookings\Wordpress;
+use WP_Post;
 
 /**
  * @property string name
@@ -33,31 +35,12 @@ class MetaboxFieldDefinition
         $this->type = $type;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getFields()
-    {
-        if ($this->type === null) {
-            return [];
-        }
-
-        if ($this->type instanceof Input) {
-            return $this->type->getFields($this->name);
-        }
-
-        return [$this->name];
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getArrayFields()
+    public function saveFields(Wordpress $wordpress, WP_Post $post)
     {
         if ($this->type === null || !($this->type instanceof Input)) {
-            return [];
+            return;
         }
 
-        return $this->type->getArrayFields($this->name);
+        $this->type->saveFields($wordpress, $post, $this->name);
     }
 }
