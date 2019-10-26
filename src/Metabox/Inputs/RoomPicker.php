@@ -7,6 +7,9 @@ namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 use InvalidArgumentException;
 use RuntimeException;
+use SirsiDynix\CEPBookings\HTML\ElementBuilder as EB;
+use SirsiDynix\CEPBookings\HTML\Elements\JQueryModal;
+use SirsiDynix\CEPBookings\HTML\Elements\LabeledInput;
 use SirsiDynix\CEPBookings\Rest\Script\ClientScriptHelper;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\DomElement;
@@ -100,48 +103,36 @@ class RoomPicker extends Input
         ];
         $this->roomPickerAjaxScript->enqueue($data);
 
-        return new HtmlElement('div', [
+        $modal = new JQueryModal($contentFieldId, 'equipment-modal', [
             new HtmlElement('div', [
-                new HtmlElement('div', [
-                    new HtmlElement('h1', ['Rooms']),
+                new HtmlElement('h1', ['Rooms']),
+                EB::div([
+                    new LabeledInput('Room Type',
+                        (new WPPostSelectInput($this->wordpress, 'equipment_type'))->render($post, $fieldName, $roomTypeFieldId)),
+                    LabeledInput::build('Date', 'date', $eventDateFieldId),
                     new HtmlElement('div', [
+                        EB::div([
+                            LabeledInput::build('Start Time', 'time', $startTimeFieldId)->setAttribute('style', 'flex-direction: column;'),
+                            LabeledInput::build('End Time', 'time', $endTimeFieldId)->setAttribute('style', 'flex-direction: column;'),
+                        ], 'flex-row'),
                         new HtmlElement('div', [
-                            new HtmlElement('label', ['Room Type']),
-                            (new WPPostSelectInput($this->wordpress, 'room_type'))->render($post, $fieldName, $roomTypeFieldId),
-                        ], ['style' => 'align-items: center;']),
-                        new HtmlElement('div', [
-                            new HtmlElement('label', ['Date']),
-                            new InputElement('date', '', '', ['id' => $eventDateFieldId]),
-                        ], ['style' => 'align-items: center;']),
-                        new HtmlElement('div', [
-                            new HtmlElement('div', [
-                                new HtmlElement('div', [
-                                    new HtmlElement('label', ['Start Time']),
-                                    new InputElement('time', '', '', ['id' => $startTimeFieldId]),
-                                ], ['style' => 'flex-direction: column;']),
-                                new HtmlElement('div', [
-                                    new HtmlElement('label', ['End Time']),
-                                    new InputElement('time', '', '', ['id' => $endTimeFieldId]),
-                                ], ['style' => 'flex-direction: column;']),
-                            ], ['class' => 'flex-row']),
-                            new HtmlElement('div', [
-                                new HtmlElement('a', ['Find Available Room'], ['class' => 'button', 'id' => $searchButtonFieldId]),
-                            ], ['style' => 'align-self: flex-end;']),
-                        ], ['style' => 'justify-content: space-between;']),
-                    ], ['class' => 'search-control']),
-                    new HtmlElement('div', [], ['class' => 'content', 'id' => $resultsContentFieldId]),
-                    new HtmlElement('div', [
-                        new HtmlElement('a', ['Save'], ['class' => 'button button-primary', 'id' => $saveButtonFieldId]),
-                    ], ['class' => 'footer']),
-                ], ['style' => 'flex-direction: column;']),
-            ], ['id' => $contentFieldId, 'class' => 'room-modal', 'style' => 'display: none;']),
+                            new HtmlElement('a', ['Find Available Room'], ['class' => 'button', 'id' => $searchButtonFieldId]),
+                        ], ['style' => 'align-self: flex-end;']),
+                    ], ['style' => 'justify-content: space-between;']),
+                ], 'search-control'),
+                EB::div([], 'content', $resultsContentFieldId),
+                EB::div([
+                    new HtmlElement('a', ['Save'], ['class' => 'button button-primary', 'id' => $saveButtonFieldId]),
+                ], 'footer'),
+            ], ['style' => 'flex-direction: column;']),
+        ]);
+
+        return EB::div([
+            $modal,
             new HtmlElement('label', [], ['class' => 'room-summary-label', 'id' => $summaryLabelFieldId]),
-            new HtmlElement('a', ['Edit'], [
-                'class' => 'button', 'href' => '#' . $contentFieldId,
-                'rel' => 'modal:open', 'id' => $editButtonFieldId,
-            ]),
+            $modal->createOpenButton('Edit', $editButtonFieldId),
             new InputElement('hidden', $fieldName, '', ['id' => $fieldId])
-        ], ['style' => 'display: flex; align-items: center;']);
+        ], null, null, ['style' => 'display: flex; align-items: center;']);
     }
 
     /**

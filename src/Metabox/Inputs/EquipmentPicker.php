@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
+use SirsiDynix\CEPBookings\HTML\ElementBuilder as EB;
+use SirsiDynix\CEPBookings\HTML\Elements\JQueryModal;
+use SirsiDynix\CEPBookings\HTML\Elements\LabeledInput;
 use SirsiDynix\CEPBookings\Rest\Script\ClientScriptHelper;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\DomElement;
 use Windwalker\Dom\HtmlElement;
-use Windwalker\Html\Form\InputElement;
 use WP_Post;
 
 
@@ -78,7 +80,7 @@ class EquipmentPicker extends Input
         $searchButtonFieldId = $fieldId . '-search-button';
         $resultsContentFieldId = $fieldId . '-results';
         $editButtonFieldId = $fieldId . 'edit-button';
-        $contentId = $fieldId . '-content';
+        $contentFieldId = $fieldId . '-content';
         $data = [
             'fieldIds' => [
                 'startTime' => $startTimeFieldId,
@@ -88,47 +90,36 @@ class EquipmentPicker extends Input
                 'searchButton' => $searchButtonFieldId,
                 'results' => $resultsContentFieldId,
                 'editButton' => $editButtonFieldId,
-                'content' => $contentId,
+                'content' => $contentFieldId,
             ]
         ];
         $this->equipmentPickerAjaxScript->enqueue($data);
 
-        return new HtmlElement('div', [
-            new HtmlElement('div', [
-                new HtmlElement('div', [
-                    new HtmlElement('h1', ['Equipment']),
-                    new HtmlElement('div', [
-                        new HtmlElement('div', [
-                            new HtmlElement('label', ['Equipment Type']),
-                            (new WPPostSelectInput($this->wordpress, 'equipment_type'))->render($post, $fieldName, $equipmentTypeFieldId),
-                        ], ['style' => 'align-items: center;']),
-                        new HtmlElement('div', [
-                            new HtmlElement('label', ['Date']),
-                            new InputElement('date', '', '', ['id' => $eventDateFieldId]),
-                        ], ['style' => 'align-items: center;']),
-                        new HtmlElement('div', [
-                            new HtmlElement('div', [
-                                new HtmlElement('div', [
-                                    new HtmlElement('label', ['Start Time']),
-                                    new InputElement('time', '', '', ['id' => $startTimeFieldId]),
-                                ], ['style' => 'flex-direction: column;']),
-                                new HtmlElement('div', [
-                                    new HtmlElement('label', ['End Time']),
-                                    new InputElement('time', '', '', ['id' => $endTimeFieldId]),
-                                ], ['style' => 'flex-direction: column;']),
-                            ], ['class' => 'flex-row']),
-                            new HtmlElement('div', [
-                                new HtmlElement('a', ['Find Equipment'], ['class' => 'button', 'id' => $searchButtonFieldId])
-                            ], ['style' => 'align-self: flex-end;'])
-                        ], ['style' => 'justify-content: space-between;']),
-                    ], ['class' => 'search-control']),
-                    new HtmlElement('div', [], ['id' => $resultsContentFieldId]),
-                ], ['style' => 'flex-direction: column;']),
-            ], ['id' => $contentId, 'class' => 'equipment-modal', 'style' => 'display: none;']),
-            new HtmlElement('a', ['Edit'], [
-                'class' => 'button', 'href' => '#' . $contentId,
-                'rel' => 'modal:open', 'id' => $editButtonFieldId,
-            ]),
+        $modal = new JQueryModal($contentFieldId, 'equipment-modal', [
+            EB::div([
+                new HtmlElement('h1', ['Equipment']),
+                EB::div([
+                    new LabeledInput('Equipment Type',
+                        (new WPPostSelectInput($this->wordpress, 'equipment_type'))->render($post, $fieldName, $equipmentTypeFieldId)),
+                    LabeledInput::build('Date', 'date', $eventDateFieldId),
+                    EB::div([
+                        EB::div([
+                            LabeledInput::build('Start Time', 'time', $startTimeFieldId)->setAttribute('style', 'flex-direction: column;'),
+                            LabeledInput::build('End Time', 'time', $endTimeFieldId)->setAttribute('style', 'flex-direction: column;'),
+                        ], 'flex-row'),
+                        EB::div([
+                            new HtmlElement('a', ['Find Equipment'], ['class' => 'button', 'id' => $searchButtonFieldId])
+                        ], null, null, ['style' => 'align-self: flex-end;'])
+                    ], null, null, ['style' => 'justify-content: space-between;']),
+                ], 'search-control'),
+                EB::div([], null, $resultsContentFieldId),
+            ], null, null, ['style' => 'flex-direction: column;']),
+            EB::div([]),
+        ]);
+
+        return EB::div([
+            $modal,
+            $modal->createOpenButton('Edit', $editButtonFieldId),
         ]);
     }
 

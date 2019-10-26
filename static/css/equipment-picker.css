@@ -1,7 +1,8 @@
 .equipment-modal {
+    display: flex;
+    min-height: 600px;
+    min-width: 750px;
     max-width: 1000px;
-    height: 600px;
-    width: 750px;
 }
 
 .equipment-modal label {
