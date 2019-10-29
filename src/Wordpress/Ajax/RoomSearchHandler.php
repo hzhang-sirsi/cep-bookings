@@ -32,7 +32,8 @@ SELECT rooms.id, rooms.title,
     start_dates.start_date AS start_date,
     end_dates.end_date AS end_date,
     start_times.start_time AS start_time,
-    end_times.end_time AS end_time
+    end_times.end_time AS end_time,
+    reservations.conflicts IS NULL AS available
 FROM (
         SELECT ID AS id, post_title AS title FROM {$wpdb->posts}
         WHERE post_type = 'room'
@@ -72,7 +73,6 @@ WHERE
     AND (start_times.start_time IS NULL OR TIME_TO_SEC(%s) >= start_times.start_time)
     AND (end_times.end_time IS NULL OR TIME_TO_SEC(%s) <= end_times.end_time)
     AND weekdays.weekdays_available LIKE CONCAT('%%', DAYNAME(%s), '%%')
-    -- AND (reservations.conflicts IS NULL)
     AND room_types.meta_value = %s
 SQL;
         $query = $wpdb->prepare($queryString, [$eventId, $eventDate, $endTime, $startTime, $eventDate, $eventDate, $startTime, $endTime, $eventDate, $roomType]);
@@ -91,6 +91,7 @@ SQL;
                 'start_time' => $post->start_time,
                 'end_time' => $post->end_time,
                 'reservations' => $reservations_by_room[intval($post->id)],
+                'available' => filter_var($post->available, FILTER_VALIDATE_BOOLEAN),
             ]);
         }
 

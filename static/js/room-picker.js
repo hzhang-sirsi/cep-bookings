@@ -72,9 +72,18 @@
                         throw 'No rooms available.';
                     }
 
+                    return response.data.posts;
+                }).then((posts) => {
                     // Create a DataSet (allows two way data-binding)
                     let groups = new vis.DataSet([]);
-                    let items = new vis.DataSet([]);
+                    let items = new vis.DataSet([
+                        {
+                            id: 'background',
+                            start: new Date(eventDate + 'T' + startTime),
+                            end: new Date(eventDate + 'T' + endTime),
+                            type: 'background',
+                        }
+                    ]);
 
                     let startDate = new Date(eventDate + 'T00:00:00');
                     let endDate = new Date(eventDate + 'T00:00:00').setDate(startDate.getDate() + 1);
@@ -85,29 +94,44 @@
                         start: startDate,
                         end: endDate,
                         moveable: false,
+                        selectable: false,
+                        zoomable: false,
                         groupTemplate: (group) => {
                             const container = document.createElement('div');
+                            container.classList.add('timeline-group-container');
+                            if (group.available !== true) {
+                                container.classList.add('timeline-group-disabled');
+                            }
+                            else {
+                                container.addEventListener('click', (e) => {
+                                    root.querySelectorAll('.timeline-group-selected').forEach((e) => {
+                                        e.classList.remove('timeline-group-selected');
+                                    });
+                                    container.classList.add('timeline-group-selected');
+
+                                    pending = {
+                                        post_id: group.id,
+                                        title: group.content,
+                                        date: eventDate,
+                                        startTime: startTime,
+                                        endTime: endTime,
+                                    };
+                                });
+                            }
+                            if (group.id === selected.post_id) {
+                                container.classList.add('timeline-group-selected');
+                            }
+
                             const label = document.createElement('label');
                             label.textContent = group.content;
                             container.appendChild(label);
 
-                            container.addEventListener('click', (e) => {
-                                container.classList.add('selected');
-
-                                pending = {
-                                    post_id: group.id,
-                                    title: group.content,
-                                    date: eventDate,
-                                    startTime: startTime,
-                                    endTime: endTime,
-                                };
-                            });
                             return container;
                         },
                     };
 
                     root.innerHTML = '';
-                    for (let post of response.data.posts) {
+                    for (let post of posts) {
                         if (post.reservations !== undefined && post.reservations !== null) {
                             for (let reservation of post.reservations) {
                                 let start = new Date(eventDate + 'T' + reservation.start_time);
@@ -123,7 +147,7 @@
                             }
                         }
 
-                        groups.add({id: post.id, content: post.title})
+                        groups.add({id: post.id, content: post.title, available: post.available})
                     }
 
                     root.innerHTML = '';

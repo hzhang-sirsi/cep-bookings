@@ -103,12 +103,12 @@ class RoomPicker extends Input
         ];
         $this->roomPickerAjaxScript->enqueue($data);
 
-        $modal = new JQueryModal($contentFieldId, 'equipment-modal', [
+        $modal = new JQueryModal($contentFieldId, 'room-modal', [
             new HtmlElement('div', [
                 new HtmlElement('h1', ['Rooms']),
                 EB::div([
                     new LabeledInput('Room Type',
-                        (new WPPostSelectInput($this->wordpress, 'equipment_type'))->render($post, $fieldName, $roomTypeFieldId)),
+                        (new WPPostSelectInput($this->wordpress, 'room_type'))->render($post, $fieldName, $roomTypeFieldId)),
                     LabeledInput::build('Date', 'date', $eventDateFieldId),
                     new HtmlElement('div', [
                         EB::div([

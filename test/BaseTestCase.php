@@ -6,6 +6,7 @@ namespace SirsiDynix\CEPBookings;
 
 use DI\Container;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use SirsiDynix\CEPBookings\Modules\DatabaseModule;
 
 class BaseTestCase extends TestCase
@@ -27,5 +28,14 @@ class BaseTestCase extends TestCase
     protected function tearDown(): void
     {
         parent::tearDown();
+    }
+
+    protected function invokeMethod(&$object, $methodName, array $parameters = array())
+    {
+        $reflection = new ReflectionClass(get_class($object));
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($object, $parameters);
     }
 }
