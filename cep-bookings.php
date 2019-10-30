@@ -2,7 +2,7 @@
 /*
 Plugin Name: CEP Bookings
 Description: Provides tracking for room availability and asset tracking
-Version: 0.0.2
+Version: 0.0.3
 Author: SirsiDynix
 Author URI: http://sirsidynix.com
 Text Domain: cep-bookings
