@@ -118,7 +118,7 @@
                                     };
                                 });
                             }
-                            if (group.id === selected.post_id) {
+                            if (selected !== null && group.id === selected.post_id) {
                                 container.classList.add('timeline-group-selected');
                             }
 
