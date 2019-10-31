@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SirsiDynix\CEPBookings\Metabox\Inputs;
+namespace SirsiDynix\CEPBookings\Metabox\Inputs\Meta;
 
 
 use SirsiDynix\CEPBookings\Wordpress;

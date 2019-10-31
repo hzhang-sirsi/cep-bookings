@@ -6,18 +6,18 @@ namespace SirsiDynix\CEPBookings\Metabox;
 
 use SirsiDynix\CEPBookings\ECP\ECPIntegration;
 use SirsiDynix\CEPBookings\Metabox\Fields\MetaboxFieldDefinition;
-use SirsiDynix\CEPBookings\Metabox\Inputs\MediaGalleryPicker;
-use SirsiDynix\CEPBookings\Metabox\Inputs\WeeklyAvailabilityInput;
-use SirsiDynix\CEPBookings\Metabox\Inputs\WPPostSelectInput;
+use SirsiDynix\CEPBookings\Metabox\Inputs\Meta\MediaGalleryPicker;
+use SirsiDynix\CEPBookings\Metabox\Inputs\Meta\WeeklyAvailabilityInput;
+use SirsiDynix\CEPBookings\Metabox\Inputs\Meta\WPPostSelectInput;
 use SirsiDynix\CEPBookings\Wordpress;
 
 class RoomMetaboxProvider extends MetadataMetaboxProvider
 {
     /**
      * RoomMetaboxProvider constructor.
-     * @param Wordpress $wordpress
+     * @param Wordpress                 $wordpress
      * @param Wordpress\WordpressEvents $wordpressEvents
-     * @param ECPIntegration $ECPIntegration
+     * @param ECPIntegration            $ECPIntegration
      */
     public function __construct(Wordpress $wordpress, Wordpress\WordpressEvents $wordpressEvents, ECPIntegration $ECPIntegration)
     {

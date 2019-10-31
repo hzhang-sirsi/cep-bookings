@@ -5,9 +5,9 @@ namespace SirsiDynix\CEPBookings\Metabox;
 
 
 use SirsiDynix\CEPBookings\Metabox\Fields\MetaboxFieldDefinition;
-use SirsiDynix\CEPBookings\Metabox\Inputs\GenericInput;
-use SirsiDynix\CEPBookings\Metabox\Inputs\WeeklyAvailabilityInput;
-use SirsiDynix\CEPBookings\Metabox\Inputs\WPPostSelectInput;
+use SirsiDynix\CEPBookings\Metabox\Inputs\Meta\GenericInput;
+use SirsiDynix\CEPBookings\Metabox\Inputs\Meta\WeeklyAvailabilityInput;
+use SirsiDynix\CEPBookings\Metabox\Inputs\Meta\WPPostSelectInput;
 use SirsiDynix\CEPBookings\Wordpress;
 use WP_Post;
 
@@ -16,7 +16,7 @@ class EquipmentMetaboxProvider extends MetadataMetaboxProvider
     /**
      * RoomMetaboxProvider constructor.
      * @param Wordpress\WordpressEvents $wordpressEvents
-     * @param Wordpress $wordpress
+     * @param Wordpress                 $wordpress
      */
     public function __construct(Wordpress\WordpressEvents $wordpressEvents, Wordpress $wordpress)
     {

@@ -14,10 +14,10 @@ class EventsCalendarMetaboxProvider extends MetadataMetaboxProvider
 {
     /**
      * RoomMetaboxProvider constructor.
-     * @param Wordpress $wordpress
+     * @param Wordpress                 $wordpress
      * @param Wordpress\WordpressEvents $wordpressEvents
-     * @param ClientScriptHelper $roomPickerAjaxScript
-     * @param ClientScriptHelper $equipmentPickerAjaxScript
+     * @param ClientScriptHelper        $roomPickerAjaxScript
+     * @param ClientScriptHelper        $equipmentPickerAjaxScript
      */
     public function __construct(Wordpress $wordpress, Wordpress\WordpressEvents $wordpressEvents, ClientScriptHelper $roomPickerAjaxScript, ClientScriptHelper $equipmentPickerAjaxScript)
     {
