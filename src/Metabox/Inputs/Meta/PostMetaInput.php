@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace SirsiDynix\CEPBookings\Metabox\Inputs;
+namespace SirsiDynix\CEPBookings\Metabox\Inputs\Meta;
 
 
+use SirsiDynix\CEPBookings\Metabox\Inputs\Input;
 use SirsiDynix\CEPBookings\Wordpress;
 use WP_Post;
 

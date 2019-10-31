@@ -42,11 +42,11 @@ class ClientScriptHelper
 
     /**
      * ClientScriptHelper constructor.
-     * @param Wordpress $wordpress
-     * @param string $scriptName
-     * @param string $scriptUrl
-     * @param array $dependencies
-     * @param string $objectName
+     * @param Wordpress     $wordpress
+     * @param string        $scriptName
+     * @param string        $scriptUrl
+     * @param array         $dependencies
+     * @param string        $objectName
      * @param AjaxHandler[] $handlers
      */
     public function __construct(Wordpress $wordpress, string $scriptName, string $scriptUrl, array $dependencies, string $objectName, $handlers)

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 
+use SirsiDynix\CEPBookings\Metabox\Inputs\Meta\WPPostSelectInput;
 use SirsiDynix\CEPBookings\Rest\Script\ClientScriptHelper;
 use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\DomElement;
@@ -30,7 +31,7 @@ class EquipmentPicker extends Input
 
     /**
      * MediaGalleryPicker constructor.
-     * @param Wordpress $wordpress
+     * @param Wordpress          $wordpress
      * @param ClientScriptHelper $equipmentPickerAjaxScript
      */
     public function __construct(Wordpress $wordpress, ClientScriptHelper $equipmentPickerAjaxScript)
@@ -59,8 +60,8 @@ class EquipmentPicker extends Input
 
     /**
      * @param WP_Post $post
-     * @param string $fieldName
-     * @param string $fieldId
+     * @param string  $fieldName
+     * @param string  $fieldId
      * @return DomElement
      */
     public function render(WP_Post $post, string $fieldName, string $fieldId)
@@ -134,8 +135,8 @@ class EquipmentPicker extends Input
 
     /**
      * @param Wordpress $wordpress
-     * @param WP_Post $post
-     * @param string $fieldName
+     * @param WP_Post   $post
+     * @param string    $fieldName
      * @return void
      */
     public function saveFields(Wordpress $wordpress, WP_Post $post, string $fieldName)

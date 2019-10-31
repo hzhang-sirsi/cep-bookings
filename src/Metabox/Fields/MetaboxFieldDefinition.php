@@ -10,16 +10,16 @@ use SirsiDynix\CEPBookings\Wordpress;
 use WP_Post;
 
 /**
- * @property string name
- * @property string friendlyName
- * @property Input|string|null type
+ * @property string            $name
+ * @property string            $friendlyName
+ * @property Input|string|null $type
  */
 class MetaboxFieldDefinition
 {
     /**
      * MetaboxFieldDefinition constructor.
-     * @param string $name
-     * @param string|null $friendlyName
+     * @param string            $name
+     * @param string|null       $friendlyName
      * @param Input|string|null $type
      */
     public function __construct(string $name, string $friendlyName = null, $type = null)
