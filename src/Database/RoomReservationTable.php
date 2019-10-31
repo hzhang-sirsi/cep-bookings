@@ -27,11 +27,11 @@ class RoomReservationTable extends WPDBTable
     protected function getColumns(): array
     {
         return [
-            ['name' => 'event_id', 'type' => 'BIGINT(20)', 'attributes' => 'UNSIGNED NOT NULL'],
-            ['name' => 'room_id', 'type' => 'BIGINT(20)', 'attributes' => 'UNSIGNED NOT NULL'],
-            ['name' => 'date', 'type' => 'DATE', 'attributes' => 'NOT NULL'],
-            ['name' => 'start_time', 'type' => 'TIME', 'attributes' => 'NOT NULL'],
-            ['name' => 'end_time', 'type' => 'TIME', 'attributes' => 'NOT NULL'],
+            ['name' => 'event_id', 'type' => 'bigint(20) UNSIGNED', 'attributes' => 'NOT NULL'],
+            ['name' => 'room_id', 'type' => 'bigint(20) UNSIGNED', 'attributes' => 'NOT NULL'],
+            ['name' => 'date', 'type' => 'date', 'attributes' => 'NOT NULL'],
+            ['name' => 'start_time', 'type' => 'time', 'attributes' => 'NOT NULL'],
+            ['name' => 'end_time', 'type' => 'time', 'attributes' => 'NOT NULL'],
         ];
     }
 

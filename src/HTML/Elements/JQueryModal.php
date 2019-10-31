@@ -17,7 +17,7 @@ class JQueryModal extends HtmlElement
      * JQueryModal constructor.
      * @param string $id
      * @param string $class
-     * @param array $contents
+     * @param array  $contents
      */
     public function __construct(string $id, string $class, array $contents)
     {

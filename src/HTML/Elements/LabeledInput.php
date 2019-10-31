@@ -13,7 +13,7 @@ class LabeledInput extends HtmlElement
 {
     /**
      * LabeledInput constructor.
-     * @param string $label
+     * @param string            $label
      * @param DomElement|string $input
      */
     public function __construct(string $label, $input)

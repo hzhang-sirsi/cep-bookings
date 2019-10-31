@@ -18,11 +18,11 @@ class ElementBuilder
     }
 
     /**
-     * @param string $tag
-     * @param array $content
+     * @param string      $tag
+     * @param array       $content
      * @param string|null $class
      * @param string|null $id
-     * @param array $attribs
+     * @param array       $attribs
      * @return HtmlElement
      */
     public static function buildElement(string $tag, array $content, string $class = null, string $id = null, array $attribs = [])
