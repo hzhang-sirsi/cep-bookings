@@ -1,23 +1,27 @@
-.PHONY: dev composer env test
+.PHONY: dev build env test
 
-.DEFAULT_GOAL := env
+.DEFAULT_GOAL := build
 
 dev:
 	@mkdir -p env
 
-composer: dev
+env/composer: dev
 	@scripts/install-composer.sh
 
-env: composer
+env/php-cs-fixer: dev
+	@wget https://cs.symfony.com/download/php-cs-fixer-v2.phar -O env/php-cs-fixer
+	@chmod +x env/php-cs-fixer
 
-vendor: composer
+env: env/composer env/php-cs-fixer
 	env/composer install
 
 test: test-unit lint
 
-test-unit: vendor
+test-unit: env
 	./vendor/bin/phpunit test
 
+cs-fixer: env/php-cs-fixer
+	env/php-cs-fixer fix --verbose --dry-run src
 
 lint: vendor
 	./vendor/bin/phplint
@@ -28,8 +32,9 @@ builddir:
 clean:
 	rm -rf build/
 
-build: builddir
-	mkdir -p build/cep-bookings
+build: test builddir
+	env/composer install -o
+	rm -rf build/cep-bookings && mkdir -p build/cep-bookings
 	cp cep-bookings.php bootstrap.php build/cep-bookings/
 	cp -r src build/cep-bookings/
 	cp -r static build/cep-bookings/

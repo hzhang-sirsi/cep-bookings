@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPBookings\Metabox\Inputs;
+namespace SirsiDynix\CEPBookings\Metabox\Inputs\Meta;
 
 
 use Windwalker\Dom\DomElement;
@@ -11,7 +11,7 @@ use WP_Post;
 
 /**
  * @property string $type
- * @property array attribs
+ * @property array  $attribs
  */
 class GenericInput extends PostMetaInput
 {
@@ -22,9 +22,9 @@ class GenericInput extends PostMetaInput
 
     /**
      * SelectInput constructor.
-     * @param string $type
+     * @param string   $type
      * @param callable $value
-     * @param array $attribs
+     * @param array    $attribs
      */
     public function __construct(string $type, callable $value, array $attribs = [])
     {
@@ -53,8 +53,8 @@ class GenericInput extends PostMetaInput
 
     /**
      * @param WP_Post $post
-     * @param string $fieldName
-     * @param string $fieldId
+     * @param string  $fieldName
+     * @param string  $fieldId
      * @return DomElement
      */
     public function render(WP_Post $post, string $fieldName, string $fieldId)

@@ -8,33 +8,33 @@ namespace SirsiDynix\CEPBookings\Wordpress\Model;
 use SirsiDynix\CEPBookings\Wordpress\Constants\MenuPosition;
 
 /**
- * @property string name
- * @property array labels
- * @property string label
- * @property string description
- * @property array supports
- * @property array taxonomies
- * @property bool hierarchical
- * @property bool public
- * @property bool show_ui
- * @property bool show_in_menu
- * @property bool show_in_nav_menus
- * @property bool show_in_admin_bar
- * @property int menu_position
- * @property bool can_export
- * @property bool has_archive
- * @property bool exclude_from_search
- * @property bool publicly_queryable
- * @property string capability_type
- * @property string menu_icon
- * @property bool show_in_rest
- * @property callable register_meta_box_cb
+ * @property string   $name
+ * @property array    $labels
+ * @property string   $label
+ * @property string   $description
+ * @property array    $supports
+ * @property array    $taxonomies
+ * @property bool     $hierarchical
+ * @property bool     $public
+ * @property bool     $show_ui
+ * @property bool     $show_in_menu
+ * @property bool     $show_in_nav_menus
+ * @property bool     $show_in_admin_bar
+ * @property int      $menu_position
+ * @property bool     $can_export
+ * @property bool     $has_archive
+ * @property bool     $exclude_from_search
+ * @property bool     $publicly_queryable
+ * @property string   $capability_type
+ * @property string   $menu_icon
+ * @property bool     $show_in_rest
+ * @property callable $register_meta_box_cb
  */
 class WPPostType
 {
     /**
      * WPPostType constructor.
-     * @param string $name
+     * @param string      $name
      * @param string|null $singular_name
      * @param string|null $plural_name
      */

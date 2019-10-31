@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace SirsiDynix\CEPBookings\Metabox\Inputs;
+namespace SirsiDynix\CEPBookings\Metabox\Inputs\Meta;
 
 
 use SirsiDynix\CEPBookings\Wordpress;
@@ -53,8 +53,8 @@ class MediaGalleryPicker extends PostMetaInput
 
     /**
      * @param WP_Post $post
-     * @param string $fieldName
-     * @param string $fieldId
+     * @param string  $fieldName
+     * @param string  $fieldId
      * @return DomElement
      */
     public function render(WP_Post $post, string $fieldName, string $fieldId)

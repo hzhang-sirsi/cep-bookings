@@ -17,7 +17,7 @@ use WP_Post;
  * Constructs a metabox that takes an array of MetaboxFieldDefinition. These fields will be
  * editable, controlled by the MetaboxFieldDefinition.
  *
- * @property MetaboxFieldDefinition[] fields
+ * @property MetaboxFieldDefinition[] $fields
  */
 class MetadataMetaboxProvider
 {
@@ -33,9 +33,9 @@ class MetadataMetaboxProvider
 
     /**
      * MetadataMetaboxProvider constructor.
-     * @param Wordpress $wordpress
+     * @param Wordpress                 $wordpress
      * @param Wordpress\WordpressEvents $events
-     * @param MetaboxFieldDefinition[] $fields
+     * @param MetaboxFieldDefinition[]  $fields
      */
     public function __construct(Wordpress $wordpress, Wordpress\WordpressEvents $events, array $fields)
     {

@@ -9,8 +9,8 @@ use Closure;
 use SirsiDynix\CEPBookings\Wordpress;
 
 /**
- * @property Wordpress wordpress
- * @property WordpressEventsDispatcher proxy
+ * @property Wordpress                 $wordpress
+ * @property WordpressEventsDispatcher $proxy
  */
 class WordpressEvents
 {
