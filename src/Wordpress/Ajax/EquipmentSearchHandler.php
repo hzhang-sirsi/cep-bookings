@@ -4,10 +4,27 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Wordpress\Ajax;
 
 
+use SirsiDynix\CEPBookings\Database\Model\EquipmentReservation;
 use SirsiDynix\CEPBookings\Wordpress;
 
 class EquipmentSearchHandler extends AjaxHandler
 {
+    /**
+     * @var EquipmentReservation
+     */
+    private $equipmentReservationModel;
+
+    /**
+     * EquipmentSearchHandler constructor.
+     * @param EquipmentReservation $equipmentReservationModel
+     * @param Wordpress            $wordpress
+     */
+    public function __construct(EquipmentReservation $equipmentReservationModel, Wordpress $wordpress)
+    {
+        $this->equipmentReservationModel = $equipmentReservationModel;
+        parent::__construct($wordpress);
+    }
+
     public function getEventName(): string
     {
         return 'cb_equip_search';
@@ -16,6 +33,7 @@ class EquipmentSearchHandler extends AjaxHandler
     public function handler(array $postData)
     {
         $equipmentType = intval($postData['equipmentType']);
+        $eventId = intval($postData['eventId']);
         $eventDate = $postData['eventDate'];
         $startTime = $postData['startTime'];
         $endTime = $postData['endTime'];
@@ -24,26 +42,14 @@ class EquipmentSearchHandler extends AjaxHandler
             'posts' => []
         ];
 
-        $wpdb = Wordpress::get_database();
-        $queryString = <<<SQL
-SELECT posts.ID AS id, posts.post_title AS title
-FROM {$wpdb->posts} posts JOIN {$wpdb->postmeta} postmeta ON posts.ID = postmeta.post_id
-WHERE posts.post_type = 'equipment' AND postmeta.meta_key = 'equipment_type' AND postmeta.meta_value = %s
-SQL;
-        $query = $wpdb->prepare($queryString, [$equipmentType]);
-        $posts = $wpdb->get_results($query);
-
+        $posts = $this->equipmentReservationModel->findReservationsAvailableByEventId($eventId, $eventDate, $startTime, $endTime, $equipmentType);
         foreach ($posts as $post) {
-            $postId = intval($post->id);
-            $thumbnail = get_the_post_thumbnail_url(intval($post->id));
-            if ($thumbnail === false) {
-                $thumbnail = null;
-            }
-
             array_push($response['posts'], [
-                'id' => $postId,
+                'id' => intval($post->id),
                 'title' => $post->title,
-                'thumbnail' => $thumbnail,
+                'thumbnail' => get_the_post_thumbnail_url(intval($post->id)),
+                'booked' => intval($post->booked),
+                'quantity' => intval($post->quantity),
             ]);
         }
 

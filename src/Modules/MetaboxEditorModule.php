@@ -46,7 +46,7 @@ class MetaboxEditorModule extends AbstractModule
             ->constructorParameter('roomPickerAjaxScript', get('RoomPickerClientScriptHelper'))
         );
 
-        $wpEvents->addHandler('admin_init', function () use ($wordpress) {
+        $wpEvents->addHandler('admin_init', function () {
             $this->container->get(EventsCalendarMetaboxProvider::class)->registerMetabox(
                 $this->container->get(ECPIntegration::class)->getEventsPostType());
         });

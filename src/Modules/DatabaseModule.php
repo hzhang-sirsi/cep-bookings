@@ -6,6 +6,7 @@ namespace SirsiDynix\CEPBookings\Modules;
 
 use DI\Container;
 use Exception;
+use SirsiDynix\CEPBookings\Database\EquipmentReservationTable;
 use SirsiDynix\CEPBookings\Database\RoomReservationTable;
 use SirsiDynix\CEPBookings\Wordpress;
 use wpdb;
@@ -37,5 +38,6 @@ class DatabaseModule extends AbstractModule
     {
         $this->container->set(wpdb::class, $this->wpdb);
         $this->wpdb->get_results($this->container->get(RoomReservationTable::class)->getCreateTable());
+        $this->wpdb->get_results($this->container->get(EquipmentReservationTable::class)->getCreateTable());
     }
 }

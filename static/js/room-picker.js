@@ -27,7 +27,7 @@
     };
 
     $(document).ready(function () {
-        let selected = params.selected;
+        let selected = params.selected.length > 0 ? params.selected[0] : null;
         let pending = null;
 
         const updateValue = (newValue) => {
