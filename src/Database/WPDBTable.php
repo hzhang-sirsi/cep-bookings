@@ -32,10 +32,10 @@ abstract class WPDBTable
     public function getCreateTable(): string
     {
         return <<<SQL
-            CREATE TABLE IF NOT EXISTS {$this->getPrefixedName()} (
-                {$this->getDDL()}
-            ) {$this->wpdb->get_charset_collate()};
-            SQL;
+CREATE TABLE IF NOT EXISTS {$this->getPrefixedName()} (
+    {$this->getDDL()}
+) {$this->wpdb->get_charset_collate()};
+SQL;
     }
 
     public function getPrefixedName(): string

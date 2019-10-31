@@ -11,6 +11,9 @@
         "phpstan/phpstan": "^0.11.19",
         "giacocorsiglia/wordpress-stubs": "^5.1"
     },
+    "config" : {
+        "php": "7.2"
+    },
     "autoload": {
         "psr-4": {
             "SirsiDynix\\CEPBookings\\": "src/"
