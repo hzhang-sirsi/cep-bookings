@@ -3,9 +3,9 @@
 }
 
 .room-modal {
-    max-width: 1000px;
     height: 600px;
-    width: 750px;
+    min-width: 750px;
+    max-width: 1000px;
 }
 
 .room-modal > div {
@@ -46,6 +46,14 @@
     flex-direction: column;
 }
 
-.room-modal .selected {
-    background: #1e6abc;
+.room-modal .timeline-group-container {
+    padding: 0.2em;
+}
+
+.room-modal .timeline-group-selected {
+    background: #1e6abc80;
+}
+
+.room-modal .timeline-group-disabled *:hover {
+    cursor: not-allowed;
 }

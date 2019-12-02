@@ -7,6 +7,10 @@ namespace SirsiDynix\CEPBookings\Metabox\Inputs;
 
 use InvalidArgumentException;
 use RuntimeException;
+use SirsiDynix\CEPBookings\Database\Model\RoomReservation;
+use SirsiDynix\CEPBookings\HTML\ElementBuilder as EB;
+use SirsiDynix\CEPBookings\HTML\Elements\JQueryModal;
+use SirsiDynix\CEPBookings\HTML\Elements\LabeledInput;
 use SirsiDynix\CEPBookings\Metabox\Inputs\Meta\WPPostSelectInput;
 use SirsiDynix\CEPBookings\Rest\Script\ClientScriptHelper;
 use SirsiDynix\CEPBookings\Wordpress;
@@ -32,14 +36,21 @@ class RoomPicker extends Input
     private $roomPickerAjaxScript;
 
     /**
+     * @var RoomReservation
+     */
+    private $roomReservationModel;
+
+    /**
      * MediaGalleryPicker constructor.
      * @param Wordpress          $wordpress
      * @param ClientScriptHelper $roomPickerAjaxScript
+     * @param RoomReservation    $roomReservationModel
      */
-    public function __construct(Wordpress $wordpress, ClientScriptHelper $roomPickerAjaxScript)
+    public function __construct(Wordpress $wordpress, ClientScriptHelper $roomPickerAjaxScript, RoomReservation $roomReservationModel)
     {
         $this->wordpress = $wordpress;
         $this->roomPickerAjaxScript = $roomPickerAjaxScript;
+        $this->roomReservationModel = $roomReservationModel;
     }
 
     /**
@@ -69,19 +80,6 @@ class RoomPicker extends Input
         $summaryLabelFieldId = $fieldId . '-summary-label';
         $contentFieldId = $fieldId . '-content';
 
-        $wpdb = Wordpress::get_database();
-        $room = $wpdb->get_row($wpdb->prepare("SELECT `room_id`, `date`, `start_time`, `end_time` FROM {$wpdb->prefix}cep_bookings_room_reservations WHERE event_id = %d;", [$post->ID]));
-        $selected = null;
-        if ($room !== null) {
-            $selected = [
-                'post_id' => intval($room->room_id),
-                'title' => $this->wordpress->get_post(intval($room->room_id))->post_title,
-                'date' => $room->date,
-                'startTime' => $room->start_time,
-                'endTime' => $room->end_time,
-            ];
-        }
-
         $data = [
             'fieldIds' => [
                 'startTime' => $startTimeFieldId,
@@ -96,53 +94,62 @@ class RoomPicker extends Input
                 'content' => $contentFieldId,
                 'value' => $fieldId,
             ],
-            'selected' => $selected,
+            'selected' => $this->getReservations($post),
             'postId' => $post->ID,
         ];
         $this->roomPickerAjaxScript->enqueue($data);
 
-        return new HtmlElement('div', [
-            new HtmlElement('div', [
-                new HtmlElement('div', [
-                    new HtmlElement('h1', ['Rooms']),
-                    new HtmlElement('div', [
-                        new HtmlElement('div', [
-                            new HtmlElement('label', ['Room Type']),
-                            (new WPPostSelectInput($this->wordpress, 'room_type'))->render($post, $fieldName, $roomTypeFieldId),
-                        ], ['style' => 'align-items: center;']),
-                        new HtmlElement('div', [
-                            new HtmlElement('label', ['Date']),
-                            new InputElement('date', '', '', ['id' => $eventDateFieldId]),
-                        ], ['style' => 'align-items: center;']),
-                        new HtmlElement('div', [
-                            new HtmlElement('div', [
-                                new HtmlElement('div', [
-                                    new HtmlElement('label', ['Start Time']),
-                                    new InputElement('time', '', '', ['id' => $startTimeFieldId]),
-                                ], ['style' => 'flex-direction: column;']),
-                                new HtmlElement('div', [
-                                    new HtmlElement('label', ['End Time']),
-                                    new InputElement('time', '', '', ['id' => $endTimeFieldId]),
-                                ], ['style' => 'flex-direction: column;']),
-                            ], ['class' => 'flex-row']),
-                            new HtmlElement('div', [
-                                new HtmlElement('a', ['Find Available Room'], ['class' => 'button', 'id' => $searchButtonFieldId]),
-                            ], ['style' => 'align-self: flex-end;']),
-                        ], ['style' => 'justify-content: space-between;']),
-                    ], ['class' => 'search-control']),
-                    new HtmlElement('div', [], ['class' => 'content', 'id' => $resultsContentFieldId]),
-                    new HtmlElement('div', [
-                        new HtmlElement('a', ['Save'], ['class' => 'button button-primary', 'id' => $saveButtonFieldId]),
-                    ], ['class' => 'footer']),
-                ], ['style' => 'flex-direction: column;']),
-            ], ['id' => $contentFieldId, 'class' => 'room-modal', 'style' => 'display: none;']),
+        $modal = new JQueryModal($contentFieldId, 'room-modal', [
+            EB::div([
+                new HtmlElement('h1', ['Rooms']),
+                EB::div([
+                    new LabeledInput('Room Type',
+                        (new WPPostSelectInput($this->wordpress, 'room_type'))
+                            ->render($post, $fieldName, $roomTypeFieldId)
+                            ->setAttribute('name', null)),
+                    LabeledInput::build('Date', 'date', $eventDateFieldId),
+                    EB::div([
+                        EB::div([
+                            LabeledInput::build('Start Time', 'time', $startTimeFieldId)->setAttribute('style', 'flex-direction: column;'),
+                            LabeledInput::build('End Time', 'time', $endTimeFieldId)->setAttribute('style', 'flex-direction: column;'),
+                        ], 'flex-row'),
+                        EB::div([
+                            new HtmlElement('a', ['Find Available Room'], ['class' => 'button', 'id' => $searchButtonFieldId]),
+                        ], null, null, ['style' => 'align-self: flex-end;'])
+                    ], null, null, ['style' => 'justify-content: space-between;']),
+                ], 'search-control'),
+                EB::div([], 'content', $resultsContentFieldId),
+                EB::div([
+                    new HtmlElement('a', ['Save'], ['class' => 'button button-primary', 'id' => $saveButtonFieldId]),
+                ], 'footer'),
+            ], null, null, ['style' => 'flex-direction: column;']),
+        ]);
+
+        return EB::div([
+            $modal,
             new HtmlElement('label', [], ['class' => 'room-summary-label', 'id' => $summaryLabelFieldId]),
-            new HtmlElement('a', ['Edit'], [
-                'class' => 'button', 'href' => '#' . $contentFieldId,
-                'rel' => 'modal:open', 'id' => $editButtonFieldId,
-            ]),
+            $modal->createOpenButton('Edit', $editButtonFieldId),
             new InputElement('hidden', $fieldName, '', ['id' => $fieldId])
-        ], ['style' => 'display: flex; align-items: center;']);
+        ], null, null, ['style' => 'display: flex; align-items: center;']);
+    }
+
+    private function getReservations(WP_Post $post)
+    {
+        $reservations = $this->roomReservationModel->findReservationsByEventId(intval($post->ID));
+
+        $selected = [];
+        foreach ($reservations as $reservation) {
+            $room_id = intval($reservation->room_id);
+            array_push($selected, [
+                'post_id' => $room_id,
+                'title' => $this->wordpress->get_post($room_id)->post_title,
+                'date' => $reservation->date,
+                'startTime' => $reservation->start_time,
+                'endTime' => $reservation->end_time,
+            ]);
+        }
+
+        return $selected;
     }
 
     /**
@@ -155,53 +162,21 @@ class RoomPicker extends Input
     {
         if (array_key_exists($fieldName, $_POST)) {
             $postData = stripslashes($_POST[$fieldName]);
+            if (strlen(trim($postData)) === 0) {
+                return;
+            }
+
             $data = $this->validateArguments(json_decode($postData, true));
             if ($data === null) {
                 throw new RuntimeException('Error decoding message');
             }
 
-            $roomId = $data['post_id'];
+            $roomId = intval($data['post_id']);
+            $date = $data['date'];
             $startTime = $data['startTime'];
             $endTime = $data['endTime'];
 
-            $wpdb = Wordpress::get_database();
-            $tablename = "{$wpdb->prefix}cep_bookings_room_reservations";
-            if ($wpdb->query('START TRANSACTION;') === false) {
-                throw new RuntimeException('Error starting transaction');
-            }
-
-            $shouldRollback = true;
-            try {
-                if ($wpdb->query($wpdb->prepare("DELETE FROM {$tablename} WHERE event_id = %d LIMIT 1;", [$post->ID])) === false) {
-                    throw new RuntimeException('Error deleting old rows');
-                }
-                if ($wpdb->get_var($wpdb->prepare("SELECT CAST(%s AS TIME) < CAST(%s AS TIME) AS `valid`;", [$startTime, $endTime])) !== '1') {
-                    $data = print_r($data, true);
-                    throw new RuntimeException("Start time is not earlier than end time {$data}");
-                }
-                if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$tablename} WHERE room_id = %d AND (start_time <= %s AND %s <= end_time);", [
-                        $roomId, $startTime, $endTime,
-                    ])) !== '0') {
-                    throw new RuntimeException('Conflict found');
-                }
-                if ($wpdb->query($wpdb->prepare("INSERT INTO {$wpdb->prefix}cep_bookings_room_reservations VALUES (%d, %d, %s, %s, %s);", [
-                        $post->ID,
-                        $roomId,
-                        $data['date'],
-                        $startTime,
-                        $endTime,
-                    ])) === false) {
-                    throw new RuntimeException('Error inserting data');
-                }
-
-                $shouldRollback = false;
-            } finally {
-                if ($shouldRollback === true) {
-                    $wpdb->query('ROLLBACK;');
-                } else {
-                    $wpdb->query('COMMIT;');
-                }
-            }
+            $this->roomReservationModel->setRoomReservation(intval($post->ID), $roomId, $date, $startTime, $endTime);
         }
     }
 

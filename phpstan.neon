@@ -13,6 +13,6 @@ parameters:
     autoload_files:
         # Missing constants, function and class stubs
         - %currentWorkingDirectory%/bootstrap.php
-#    autoload_directories:
-#        - %currentWorkingDirectory%/inc/
+    autoload_directories:
+        - %currentWorkingDirectory%/env/wp/
     ignoreErrors:
