@@ -116,7 +116,7 @@ class EquipmentPicker extends Input
                         ], null, null, ['style' => 'align-self: flex-end;'])
                     ], null, null, ['style' => 'justify-content: space-between;']),
                 ], 'search-control'),
-                EB::div([], null, $resultsContentFieldId),
+                EB::div([], 'content', $resultsContentFieldId),
                 EB::div([
                     new HtmlElement('a', ['Save'], ['class' => 'button button-primary', 'id' => $saveButtonFieldId]),
                 ], 'footer'),
@@ -137,14 +137,14 @@ class EquipmentPicker extends Input
 
         $selected = [];
         foreach ($reservations as $reservation) {
-            $equipment_id = intval($reservation->equipment_id);
-            array_push($selected, [
-                'post_id' => $equipment_id,
-                'title' => $this->wordpress->get_post($equipment_id)->post_title,
-                'date' => $reservation->date,
-                'startTime' => $reservation->start_time,
-                'endTime' => $reservation->end_time,
-            ]);
+            if (!isset($selected['reservations'])) {
+                $selected['reservations'] = [];
+            }
+
+            $selected['date'] = $reservation->date;
+            $selected['startTime'] = $reservation->start_time;
+            $selected['endTime'] = $reservation->end_time;
+            $selected['reservations'][$reservation->equipment_id] = $reservation->quantity;
         }
 
         return $selected;
@@ -169,12 +169,12 @@ class EquipmentPicker extends Input
                 throw new RuntimeException('Error decoding message');
             }
 
-            $equipmentIdsToQuantities = $data['equipment_ids_to_quantities'];
+            $equipmentReservations = $data['reservations'];
             $date = $data['date'];
             $startTime = $data['startTime'];
             $endTime = $data['endTime'];
 
-            $this->equipmentReservationModel->setReservations(intval($post->ID), $equipmentIdsToQuantities, $date, $startTime, $endTime);
+            $this->equipmentReservationModel->setReservations(intval($post->ID), $equipmentReservations, $date, $startTime, $endTime);
         }
     }
 
@@ -182,9 +182,6 @@ class EquipmentPicker extends Input
     {
         if (!is_array($data)) {
             throw new InvalidArgumentException('Argument must be an Object');
-        }
-        if (!is_int($data['post_id'])) {
-            throw new InvalidArgumentException('post_id must be an int');
         }
         if (!is_string($data['date'])) {
             throw new InvalidArgumentException('date must be a string');
@@ -195,16 +192,15 @@ class EquipmentPicker extends Input
         if (!is_string($data['endTime'])) {
             throw new InvalidArgumentException('endTime must be a string');
         };
-
-        if ($this->wordpress->get_post($data['post_id'])->post_type !== 'room') {
-            throw new InvalidArgumentException('Post ID must be a room');
+        if (!is_array($data['reservations'])) {
+            throw new InvalidArgumentException('reservations must be an Object');
         }
 
         return [
-            'post_id' => $data['post_id'],
             'date' => $data['date'],
             'startTime' => $data['startTime'],
             'endTime' => $data['endTime'],
+            'reservations' => $data['reservations'],
         ];
     }
 }

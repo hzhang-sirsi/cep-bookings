@@ -57,6 +57,11 @@
     background: #1e6abc80;
 }
 
+.equipment-modal .equipment-group-container > img {
+    height: 100px;
+    object-fit: cover;
+}
+
 .equipment-modal .timeline-group-disabled *:hover {
     cursor: not-allowed;
 }
