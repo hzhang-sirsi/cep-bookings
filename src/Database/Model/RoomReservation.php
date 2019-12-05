@@ -6,7 +6,7 @@ namespace SirsiDynix\CEPBookings\Database\Model;
 
 use RuntimeException;
 use SirsiDynix\CEPBookings\Database\RoomReservationTable;
-use wpdb;
+use SirsiDynix\CEPBookings\Database\TransactionManager;
 
 class RoomReservation extends BoundModel
 {
@@ -18,18 +18,20 @@ class RoomReservation extends BoundModel
 
     /**
      * RoomReservation constructor.
-     * @param wpdb                 $wpdb
+     * @param TransactionManager   $transactionManager
      * @param RoomReservationTable $roomReservationTable
      */
-    public function __construct(wpdb $wpdb, RoomReservationTable $roomReservationTable)
+    public function __construct(TransactionManager $transactionManager, RoomReservationTable $roomReservationTable)
     {
         $this->roomReservationTable = $roomReservationTable;
-        parent::__construct($wpdb);
+        parent::__construct($transactionManager);
     }
 
     public function findReservationsAvailableByEventId(int $eventId, string $eventDate, string $startTime, string $endTime, int $roomType)
     {
-        $query = $this->wpdb->prepare(<<<SQL
+        $postsTable = $this->tm->getPrefixedTableName('posts');
+        $postMetaTable = $this->tm->getPrefixedTableName('postmeta');
+        return $this->tm->get_results(<<<SQL
 SELECT rooms.id, rooms.title,
     start_dates.start_date AS start_date,
     end_dates.end_date AS end_date,
@@ -37,31 +39,31 @@ SELECT rooms.id, rooms.title,
     end_times.end_time AS end_time,
     reservations.conflicts IS NULL AS available
 FROM (
-        SELECT ID AS id, post_title AS title FROM {$this->wpdb->posts}
+        SELECT ID AS id, post_title AS title FROM {$postsTable}
         WHERE post_type = 'room' AND post_status = 'publish'
     ) rooms
     JOIN (
-        SELECT post_id, meta_value FROM {$this->wpdb->postmeta}
+        SELECT post_id, meta_value FROM {$postMetaTable}
         WHERE meta_key = 'room_type'
     ) room_types ON rooms.id = room_types.post_id
     JOIN (
-        SELECT post_id, DATE(meta_value) AS start_date FROM {$this->wpdb->postmeta}
+        SELECT post_id, DATE(meta_value) AS start_date FROM {$postMetaTable}
         WHERE meta_key = 'availability_startDate'
     ) start_dates ON rooms.id = start_dates.post_id
     JOIN (
-        SELECT post_id, DATE(meta_value) AS end_date FROM {$this->wpdb->postmeta}
+        SELECT post_id, DATE(meta_value) AS end_date FROM {$postMetaTable}
         WHERE meta_key = 'availability_endDate'
     ) end_dates ON rooms.id = end_dates.post_id
     JOIN (
-        SELECT post_id, TIME_TO_SEC(meta_value) AS start_time FROM {$this->wpdb->postmeta}
+        SELECT post_id, TIME_TO_SEC(meta_value) AS start_time FROM {$postMetaTable}
         WHERE meta_key = 'availability_startTime'
     ) start_times ON rooms.id = start_times.post_id
     JOIN (
-        SELECT post_id, TIME_TO_SEC(meta_value) AS end_time FROM {$this->wpdb->postmeta}
+        SELECT post_id, TIME_TO_SEC(meta_value) AS end_time FROM {$postMetaTable}
         WHERE meta_key = 'availability_endTime'
     ) end_times ON rooms.id = end_times.post_id
     JOIN (
-        SELECT post_id, meta_value AS weekdays_available FROM {$this->wpdb->postmeta}
+        SELECT post_id, meta_value AS weekdays_available FROM {$postMetaTable}
         WHERE meta_key = 'availability_weekdaysAvailable'
     ) weekdays ON rooms.id = weekdays.post_id
     LEFT JOIN (
@@ -77,8 +79,7 @@ WHERE
     AND weekdays.weekdays_available LIKE CONCAT('%%', DAYNAME(%s), '%%')
     AND room_types.meta_value = %s
 SQL
-, [$eventId, $eventDate, $endTime, $startTime, $eventDate, $eventDate, $startTime, $endTime, $eventDate, $roomType]);
-        return $this->wpdb->get_results($query);
+            , [$eventId, $eventDate, $endTime, $startTime, $eventDate, $eventDate, $startTime, $endTime, $eventDate, $roomType]);
     }
 
     /**
@@ -87,13 +88,12 @@ SQL
      */
     public function findReservationsByEventId(int $eventId): array
     {
-        $query = $this->wpdb->prepare(<<<SQL
+        return $this->tm->get_results(<<<SQL
 SELECT `room_id`, `date`, `start_time`, `end_time`
 FROM {$this->roomReservationTable->getPrefixedName()}
 WHERE event_id = %d;
 SQL
-, [$eventId]);
-        return $this->wpdb->get_results($query);
+            , [$eventId]);
     }
 
     public function findReservationsByRoom(string $eventDate, array $roomIds)
@@ -105,14 +105,13 @@ SQL
         $reservations_by_room = [];
 
         $roomIdsStr = join(', ', $roomIds);
-        $query = $this->wpdb->prepare(<<<SQL
+        $reservations = $this->tm->get_results(<<<SQL
 SELECT res.room_id, res.event_id, posts.post_title AS event_name, res.start_time, res.end_time
 FROM {$this->roomReservationTable->getPrefixedName()} res
-    JOIN {$this->wpdb->posts} posts ON res.event_id = posts.ID
+    JOIN {$this->tm->getPrefixedTableName('posts')} posts ON res.event_id = posts.ID
 WHERE `date` = %s AND room_id IN ({$roomIdsStr}) AND posts.post_type = 'tribe_events'
 SQL
-, [$eventDate]);
-        $reservations = $this->wpdb->get_results($query);
+            , [$eventDate]);
 
         foreach ($reservations as $reservation) {
             if (!array_key_exists($reservation->room_id, $reservations_by_room)) {
@@ -126,42 +125,28 @@ SQL
 
     public function setRoomReservation(int $eventId, int $roomId, string $date, string $startTime, string $endTime)
     {
-        $wpdb = $this->wpdb;
         $tablename = $this->roomReservationTable->getPrefixedName();
-        if ($wpdb->query('START TRANSACTION;') === false) {
-            throw new RuntimeException('Error starting transaction');
-        }
-
-        $shouldRollback = true;
-        try {
-            if ($wpdb->query($wpdb->prepare("DELETE FROM {$tablename} WHERE event_id = %d LIMIT 1;", [$eventId])) === false) {
+        $this->tm->withTransaction(function (TransactionManager $tm) use ($tablename, $eventId, $roomId, $date, $startTime, $endTime) {
+            if ($tm->query("DELETE FROM {$tablename} WHERE event_id = %d LIMIT 1;", [$eventId]) === false) {
                 throw new RuntimeException('Error deleting old rows');
             }
-            if ($wpdb->get_var($wpdb->prepare("SELECT CAST(%s AS TIME) < CAST(%s AS TIME) AS `valid`;", [$startTime, $endTime])) !== '1') {
+            if ($tm->get_var("SELECT CAST(%s AS TIME) < CAST(%s AS TIME) AS `valid`;", [$startTime, $endTime]) !== '1') {
                 throw new RuntimeException("Start time {$startTime} is not earlier than end time {$endTime}");
             }
-            if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$tablename} WHERE room_id = %d AND (start_time <= %s AND %s <= end_time);", [
+            if ($tm->get_var("SELECT COUNT(*) FROM {$tablename} WHERE room_id = %d AND (start_time <= %s AND %s <= end_time);", [
                     $roomId, $startTime, $endTime,
-                ])) !== '0') {
+                ]) !== '0') {
                 throw new RuntimeException('Conflict found');
             }
-            if ($wpdb->query($wpdb->prepare("INSERT INTO {$tablename} VALUES (%d, %d, %s, %s, %s);", [
+            if ($tm->query("INSERT INTO {$tablename} VALUES (%d, %d, %s, %s, %s);", [
                     $eventId,
                     $roomId,
                     $date,
                     $startTime,
                     $endTime,
-                ])) === false) {
+                ]) === false) {
                 throw new RuntimeException('Error inserting data');
             }
-
-            $shouldRollback = false;
-        } finally {
-            if ($shouldRollback === true) {
-                $wpdb->query('ROLLBACK;');
-            } else {
-                $wpdb->query('COMMIT;');
-            }
-        }
+        });
     }
 }

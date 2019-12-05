@@ -4,17 +4,17 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Database\Model;
 
 
-use wpdb;
+use SirsiDynix\CEPBookings\Database\TransactionManager;
 
 class BoundModel
 {
     /**
-     * @var wpdb
+     * @var TransactionManager
      */
-    protected $wpdb;
+    protected $tm;
 
-    public function __construct(wpdb $wpdb)
+    public function __construct(TransactionManager $transactionManager)
     {
-        $this->wpdb = $wpdb;
+        $this->tm = $transactionManager;
     }
 }

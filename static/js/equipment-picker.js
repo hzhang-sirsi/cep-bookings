@@ -27,8 +27,8 @@
     };
 
     $(document).ready(function () {
-        let selected = params.selected.length > 0 ? params.selected[0] : null;
-        let pending = null;
+        let selected = Object.keys(params.selected.reservations).length > 0 ? params.selected : null;
+        let pending = {};
 
         const updateValue = (newValue) => {
             if (newValue === null) {
@@ -36,7 +36,7 @@
             }
 
             try {
-                $('#' + fieldIds.summaryLabel).text(`${newValue.title} - ${newValue.date} - ${newValue.startTime} to ${newValue.endTime}`);
+                $('#' + fieldIds.summaryLabel).text(`${Object.keys(newValue.reservations).length} items - ${newValue.date} - ${newValue.startTime} to ${newValue.endTime}`);
                 $('#' + fieldIds.value).val(JSON.stringify(newValue)).change();
                 selected = newValue;
             } catch (e) {
@@ -68,6 +68,13 @@
                         }
                     }
 
+                    pending = {
+                        date: eventDate,
+                        startTime: startTime,
+                        endTime: endTime,
+                        reservations: {},
+                    };
+
                     if (response.data.posts.length === 0) {
                         throw 'No items found.';
                     }
@@ -95,7 +102,20 @@
                         input.type = 'number';
                         input.min = '0';
                         input.max = availableQuantity.toString();
+                        input.value = '0';
                         input.disabled = (availableQuantity === 0);
+
+                        input.addEventListener('input', (e) => {
+                            input.classList.add('selected');
+
+                            const quantity = parseInt(e.target.value);
+                            if (quantity > 0) {
+                                pending.reservations[id] = quantity;
+                            }
+                            else {
+                                delete pending.reservations[id];
+                            }
+                        });
 
                         const maxLabel = document.createElement('label');
                         maxLabel.textContent = `Max: ${availableQuantity}`;
