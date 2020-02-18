@@ -29,7 +29,7 @@ class EventsCalendarMetaboxProvider extends MetadataMetaboxProvider
                                 RoomReservation $roomReservation, EquipmentReservation $equipmentReservation)
     {
         parent::__construct($wordpress, $wordpressEvents, [
-            new MetaboxFieldDefinition('room_bookings', 'Room Bookings',
+            new MetaboxFieldDefinition('room_bookings', 'Room',
                 new RoomPicker($wordpress, $roomPickerAjaxScript, $roomReservation)),
             new MetaboxFieldDefinition('equipment_reservations', 'Equipment Reservations',
                 new EquipmentPicker($wordpress, $equipmentPickerAjaxScript, $equipmentReservation)),

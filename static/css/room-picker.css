@@ -1,3 +1,14 @@
+/* Workaround for bug in jQuery modal
+   https://github.com/kylefox/jquery-modal/issues/131
+*/
+.blocker {
+    z-index: 1020;
+}
+
+.modal {
+    z-index: 1021;
+}
+
 .room-summary-label {
     margin: 0 2em 0 0;
 }
@@ -56,4 +67,25 @@
 
 .room-modal .timeline-group-disabled *:hover {
     cursor: not-allowed;
+}
+
+.vis-item, .vis-item.vis-range {
+    border: none;
+}
+
+.vis-item.vis-range {
+    padding: 0;
+    height: 35px;
+    background-color: #1c5f94;
+    border: 0;
+    border-radius: 0;
+}
+
+.vis-item.vis-background {
+    background: none;
+    outline: 2px #00a0d2 solid;
+}
+
+.vis-item-content {
+    color: #ffffff;
 }

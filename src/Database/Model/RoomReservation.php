@@ -29,6 +29,7 @@ class RoomReservation extends BoundModel
 
     public function findReservationsAvailableByEventId(int $eventId, string $eventDate, string $startTime, string $endTime, int $roomType)
     {
+        $availabilityField = 'availability';
         $postsTable = $this->tm->getPrefixedTableName('posts');
         $postMetaTable = $this->tm->getPrefixedTableName('postmeta');
         return $this->tm->get_results(<<<SQL
@@ -48,23 +49,23 @@ FROM (
     ) room_types ON rooms.id = room_types.post_id
     JOIN (
         SELECT post_id, DATE(meta_value) AS start_date FROM {$postMetaTable}
-        WHERE meta_key = 'availability_startDate'
+        WHERE meta_key = '{$availabilityField}_startDate'
     ) start_dates ON rooms.id = start_dates.post_id
     JOIN (
         SELECT post_id, DATE(meta_value) AS end_date FROM {$postMetaTable}
-        WHERE meta_key = 'availability_endDate'
+        WHERE meta_key = '{$availabilityField}_endDate'
     ) end_dates ON rooms.id = end_dates.post_id
     JOIN (
         SELECT post_id, TIME_TO_SEC(meta_value) AS start_time FROM {$postMetaTable}
-        WHERE meta_key = 'availability_startTime'
+        WHERE meta_key = '{$availabilityField}_startTime'
     ) start_times ON rooms.id = start_times.post_id
     JOIN (
         SELECT post_id, TIME_TO_SEC(meta_value) AS end_time FROM {$postMetaTable}
-        WHERE meta_key = 'availability_endTime'
+        WHERE meta_key = '{$availabilityField}_endTime'
     ) end_times ON rooms.id = end_times.post_id
     JOIN (
         SELECT post_id, meta_value AS weekdays_available FROM {$postMetaTable}
-        WHERE meta_key = 'availability_weekdaysAvailable'
+        WHERE meta_key = '{$availabilityField}_weekdaysAvailable'
     ) weekdays ON rooms.id = weekdays.post_id
     LEFT JOIN (
         SELECT `room_id`, COUNT(*) AS conflicts FROM {$this->roomReservationTable->getPrefixedName()}
@@ -77,9 +78,9 @@ WHERE
     AND (start_times.start_time IS NULL OR TIME_TO_SEC(%s) >= start_times.start_time)
     AND (end_times.end_time IS NULL OR TIME_TO_SEC(%s) <= end_times.end_time)
     AND weekdays.weekdays_available LIKE CONCAT('%%', DAYNAME(%s), '%%')
-    AND room_types.meta_value = %s
+    AND (room_types.meta_value = %s OR %s = -1)
 SQL
-            , [$eventId, $eventDate, $endTime, $startTime, $eventDate, $eventDate, $startTime, $endTime, $eventDate, $roomType]);
+            , [$eventId, $eventDate, $endTime, $startTime, $eventDate, $eventDate, $startTime, $endTime, $eventDate, $roomType, $roomType]);
     }
 
     /**
@@ -133,9 +134,9 @@ SQL
             if ($tm->get_var("SELECT CAST(%s AS TIME) < CAST(%s AS TIME) AS `valid`;", [$startTime, $endTime]) !== '1') {
                 throw new RuntimeException("Start time {$startTime} is not earlier than end time {$endTime}");
             }
-            if ($tm->get_var("SELECT COUNT(*) FROM {$tablename} WHERE room_id = %d AND (start_time <= %s AND %s <= end_time);", [
-                    $roomId, $startTime, $endTime,
-                ]) !== '0') {
+            if (intval($tm->get_var("SELECT COUNT(*) FROM {$tablename} WHERE room_id = %d AND (start_time <= %s AND %s <= end_time) AND `date` = %s;", [
+                    $roomId, $startTime, $endTime, $date
+                ])) !== 0) {
                 throw new RuntimeException('Conflict found');
             }
             if ($tm->query("INSERT INTO {$tablename} VALUES (%d, %d, %s, %s, %s);", [

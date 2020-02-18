@@ -43,7 +43,7 @@
             }
         };
 
-        $('#' + fieldIds.searchButton).on('click', () => {
+        const searchHandler = () => {
             (async function () {
                 let root = document.getElementById(fieldIds.results);
 
@@ -96,6 +96,10 @@
                         moveable: false,
                         selectable: false,
                         zoomable: false,
+                        stack: false,
+                        stackSubgroups: false,
+                        margin: 0,
+                        groupHeightMode: 'fixed',
                         groupTemplate: (group) => {
                             const container = document.createElement('div');
                             container.classList.add('timeline-group-container');
@@ -162,7 +166,9 @@
                     root.appendChild(errorElem);
                 });
             })();
-        });
+        };
+
+        $('#' + fieldIds.searchButton).on('click', searchHandler);
 
         $('#' + fieldIds.saveButton).on('click', () => {
             updateValue(pending);
@@ -181,6 +187,8 @@
                 startTime.val(convert12hto24h($('#EventStartTime').val()));
                 endTime.val(convert12hto24h($('#EventEndTime').val()));
             }
+
+            searchHandler();
         });
     });
 }(jQuery, vis, roomPickerAjaxParams));

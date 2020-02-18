@@ -51,7 +51,7 @@ class SelectInput extends PostMetaInput
     public function render(WP_Post $post, string $fieldName, string $fieldId)
     {
         $root = new SelectList($fieldName, [
-            new Option('Select...', '')
+            new Option('Select...', '-1')
         ], ['id' => $fieldId, 'class' => 'code regular-text'], $post->{$fieldName}, false);
         $elements = call_user_func_array($this->elements, [$post]);
 

@@ -29,6 +29,7 @@ class EquipmentReservation extends BoundModel
 
     public function findReservationsAvailableByEventId(int $eventId, string $eventDate, string $startTime, string $endTime, int $equipmentType)
     {
+        $availabilityField = 'availability';
         $postsTable = $this->tm->getPrefixedTableName('posts');
         $postMetaTable = $this->tm->getPrefixedTableName('postmeta');
         return $this->tm->get_results(<<<SQL
@@ -49,23 +50,23 @@ FROM (
     ) equipment_quantities ON equipment.id = equipment_quantities.post_id
     JOIN (
         SELECT post_id, DATE(meta_value) AS start_date FROM {$postMetaTable}
-        WHERE meta_key = 'availability_startDate'
+        WHERE meta_key = '{$availabilityField}_startDate'
     ) start_dates ON equipment.id = start_dates.post_id
     JOIN (
         SELECT post_id, DATE(meta_value) AS end_date FROM {$postMetaTable}
-        WHERE meta_key = 'availability_endDate'
+        WHERE meta_key = '{$availabilityField}_endDate'
     ) end_dates ON equipment.id = end_dates.post_id
     JOIN (
         SELECT post_id, TIME_TO_SEC(meta_value) AS start_time FROM {$postMetaTable}
-        WHERE meta_key = 'availability_startTime'
+        WHERE meta_key = '{$availabilityField}_startTime'
     ) start_times ON equipment.id = start_times.post_id
     JOIN (
         SELECT post_id, TIME_TO_SEC(meta_value) AS end_time FROM {$postMetaTable}
-        WHERE meta_key = 'availability_endTime'
+        WHERE meta_key = '{$availabilityField}_endTime'
     ) end_times ON equipment.id = end_times.post_id
     JOIN (
         SELECT post_id, meta_value AS weekdays_available FROM {$postMetaTable}
-        WHERE meta_key = 'availability_weekdaysAvailable'
+        WHERE meta_key = '{$availabilityField}_weekdaysAvailable'
     ) weekdays ON equipment.id = weekdays.post_id
     LEFT JOIN (
         SELECT `equipment_id`, SUM(quantity) AS booked FROM {$this->equipmentReservationTable->getPrefixedName()}
@@ -78,9 +79,9 @@ WHERE
     AND (start_times.start_time IS NULL OR TIME_TO_SEC(%s) >= start_times.start_time)
     AND (end_times.end_time IS NULL OR TIME_TO_SEC(%s) <= end_times.end_time)
     AND weekdays.weekdays_available LIKE CONCAT('%%', DAYNAME(%s), '%%')
-    AND equipment_types.meta_value = %s
+    AND (equipment_types.meta_value = %s OR %s = -1)
 SQL
-            , [$eventId, $eventDate, $endTime, $startTime, $eventDate, $eventDate, $startTime, $endTime, $eventDate, $equipmentType]);
+            , [$eventId, $eventDate, $endTime, $startTime, $eventDate, $eventDate, $startTime, $endTime, $eventDate, $equipmentType, $equipmentType]);
     }
 
     /**

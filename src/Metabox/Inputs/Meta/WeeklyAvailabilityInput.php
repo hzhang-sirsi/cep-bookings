@@ -25,6 +25,7 @@ const WEEKLY_AVAILABILITY_STYLES = <<<'TAG'
     height: 25px;
     width: 25px;
     text-align: center;
+    font-size: 1.15em;
     margin: 2px;
     padding: 2px;
     background-color: #eee;
@@ -36,6 +37,7 @@ const WEEKLY_AVAILABILITY_STYLES = <<<'TAG'
 
 .day-field-container input:checked + label {
     background-color: #2196F3;
+    color: #ffffff;
 }
 TAG;
 

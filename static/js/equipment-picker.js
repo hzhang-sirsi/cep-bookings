@@ -27,7 +27,7 @@
     };
 
     $(document).ready(function () {
-        let selected = Object.keys(params.selected.reservations).length > 0 ? params.selected : null;
+        let selected = params.selected.reservations === undefined || Object.keys(params.selected.reservations).length === 0 ? null : params.selected;
         let pending = {};
 
         const updateValue = (newValue) => {
@@ -43,7 +43,7 @@
             }
         };
 
-        $('#' + fieldIds.searchButton).on('click', () => {
+        const searchHandler = () => {
             (async function () {
                 let root = document.getElementById(fieldIds.results);
 
@@ -133,7 +133,9 @@
                     root.appendChild(errorElem);
                 });
             })();
-        });
+        };
+
+        $('#' + fieldIds.searchButton).on('click', searchHandler);
 
         $('#' + fieldIds.saveButton).on('click', () => {
             updateValue(pending);
@@ -152,6 +154,8 @@
                 startTime.val(convert12hto24h($('#EventStartTime').val()));
                 endTime.val(convert12hto24h($('#EventEndTime').val()));
             }
+
+            searchHandler();
         });
     });
 }(jQuery, vis, equipmentPickerAjaxParams));

@@ -110,8 +110,12 @@ class RoomPicker extends Input
                     LabeledInput::build('Date', 'date', $eventDateFieldId),
                     EB::div([
                         EB::div([
-                            LabeledInput::build('Start Time', 'time', $startTimeFieldId)->setAttribute('style', 'flex-direction: column;'),
-                            LabeledInput::build('End Time', 'time', $endTimeFieldId)->setAttribute('style', 'flex-direction: column;'),
+                            LabeledInput::build('Start Time', 'time', $startTimeFieldId)
+                                ->setAttribute('style', 'flex-direction: column;')
+                                ->setAttribute('required', 'required'),
+                            LabeledInput::build('End Time', 'time', $endTimeFieldId)
+                                ->setAttribute('style', 'flex-direction: column;')
+                                ->setAttribute('required', 'required'),
                         ], 'flex-row'),
                         EB::div([
                             new HtmlElement('a', ['Find Available Room'], ['class' => 'button', 'id' => $searchButtonFieldId]),
