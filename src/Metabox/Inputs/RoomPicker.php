@@ -67,6 +67,7 @@ class RoomPicker extends Input
         $this->wordpress->wp_enqueue_script('jquery-timepicker-js');
         $this->wordpress->wp_enqueue_style('vis-js-css');
         $this->wordpress->wp_enqueue_script('vis-js');
+        $this->wordpress->wp_enqueue_script('font-awesome');
         $this->wordpress->wp_enqueue_style('room-picker-css', $this->wordpress->plugins_url('/static/css/room-picker.css'));
 
         $startTimeFieldId = $fieldId . '-start-time';
@@ -146,6 +147,7 @@ class RoomPicker extends Input
             $room_id = intval($reservation->room_id);
             array_push($selected, [
                 'post_id' => $room_id,
+                'roomType' => $reservation->room_type,
                 'title' => $this->wordpress->get_post($room_id)->post_title,
                 'date' => $reservation->date,
                 'startTime' => $reservation->start_time,

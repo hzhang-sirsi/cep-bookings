@@ -24,6 +24,7 @@ class WordpressEvents
         'admin_menu',
         'plugins_loaded',
         'save_post',
+        'script_loader_tag',
         'wp_insert_post_empty_content',
     ];
 

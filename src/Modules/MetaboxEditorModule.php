@@ -62,6 +62,15 @@ class MetaboxEditorModule extends AbstractModule
             $wordpress->wp_register_script('jquery-timepicker-js', '//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js', ['jquery']);
             $wordpress->wp_register_style('vis-js-css', '//cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css');
             $wordpress->wp_register_script('vis-js', '//cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js', ['jquery']);
+            $wordpress->wp_register_script('font-awesome', '//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/fontawesome.min.js');
         });
+
+//        $wpEvents->addHandler('script_loader_tag', function ($tag, $handle) use ($wordpress) {
+//            if ('font-awesome' === $handle) {
+//                return str_replace(' src', ' defer src', $tag);
+//            }
+//
+//            return $tag;
+//        });
     }
 }

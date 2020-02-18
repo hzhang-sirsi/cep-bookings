@@ -25,7 +25,7 @@ class RoomMetaboxProvider extends MetadataMetaboxProvider
             new MetaboxFieldDefinition('location', 'Location', new WPPostSelectInput($wordpress, $ECPIntegration->getVenuePostType())),
             new MetaboxFieldDefinition('room_type', 'Room Type', new WPPostSelectInput($wordpress, 'room_type')),
             new MetaboxFieldDefinition('map', 'Map', new MediaGalleryPicker($wordpress)),
-            new MetaboxFieldDefinition('availability', 'Availability', new WeeklyAvailabilityInput()),
+            new MetaboxFieldDefinition('availability', 'Availability', new WeeklyAvailabilityInput($wordpress)),
         ]);
     }
 }

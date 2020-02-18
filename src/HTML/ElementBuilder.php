@@ -10,8 +10,13 @@ class ElementBuilder
 {
     /**
      * Common elements go below here. They are simple aliases to buildElement
+     *
+     * @param array       $content
+     * @param string|null $class
+     * @param string|null $id
+     * @param array       $attribs
+     * @return HtmlElement
      */
-
     public static function div(array $content, string $class = null, string $id = null, array $attribs = [])
     {
         return self::buildElement('div', $content, $class, $id, $attribs);

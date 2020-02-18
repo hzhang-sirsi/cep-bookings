@@ -55,6 +55,7 @@ class RoomSearchHandler extends AjaxHandler
                 'end_date' => $post->end_date,
                 'start_time' => $post->start_time,
                 'end_time' => $post->end_time,
+                'roomType' => $post->room_type,
                 'reservations' => $reservations_by_room[intval($post->id)],
                 'available' => filter_var($post->available, FILTER_VALIDATE_BOOLEAN),
             ]);

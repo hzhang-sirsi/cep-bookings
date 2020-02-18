@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SirsiDynix\CEPBookings\Metabox\Inputs\Meta;
 
 
+use SirsiDynix\CEPBookings\HTML\ElementBuilder;
+use SirsiDynix\CEPBookings\Wordpress;
 use Windwalker\Dom\DomElement;
 use Windwalker\Dom\HtmlElement;
 use Windwalker\Html\Form\InputElement;
@@ -47,6 +49,16 @@ TAG;
 class WeeklyAvailabilityInput extends PostMetaInput
 {
     /**
+     * @var Wordpress
+     */
+    private $wordpress;
+
+    public function __construct(Wordpress $wordpress)
+    {
+        $this->wordpress = $wordpress;
+    }
+
+    /**
      * @param string $field
      * @return string[] Fieldnames to store
      */
@@ -79,6 +91,8 @@ class WeeklyAvailabilityInput extends PostMetaInput
      */
     public function render(WP_Post $post, string $fieldName, string $fieldId)
     {
+        $this->wordpress->wp_enqueue_script('font-awesome');
+
         return new HtmlElement('div', [
             $this->generateRow([
                 $this->generateField($post, 'Start Date', 'date', $fieldName . '_startDate'),
@@ -91,7 +105,13 @@ class WeeklyAvailabilityInput extends PostMetaInput
                 ], ['style' => 'display: flex; flex-direction: column; flex-grow: 1;']),
             ]),
             $this->generateRow([
+                ElementBuilder::div([new HtmlElement('i', [], [
+                    'class' => 'prefix-icon far fa-clock'
+                ])]),
                 $this->generateField($post, 'Start Time', 'time', $fieldName . '_startTime'),
+                ElementBuilder::div([new HtmlElement('i', [], [
+                    'class' => 'prefix-icon far fa-clock'
+                ])]),
                 $this->generateField($post, 'End Time', 'time', $fieldName . '_endTime'),
             ]),
         ], ['style' => 'display: flex; flex-direction: column; max-width: 500px; width: 100%;']);

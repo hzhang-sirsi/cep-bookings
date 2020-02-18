@@ -34,6 +34,7 @@ class RoomReservation extends BoundModel
         $postMetaTable = $this->tm->getPrefixedTableName('postmeta');
         return $this->tm->get_results(<<<SQL
 SELECT rooms.id, rooms.title,
+    room_types.meta_value AS room_type,
     start_dates.start_date AS start_date,
     end_dates.end_date AS end_date,
     start_times.start_time AS start_time,
@@ -89,9 +90,14 @@ SQL
      */
     public function findReservationsByEventId(int $eventId): array
     {
+        $postMetaTable = $this->tm->getPrefixedTableName('postmeta');
         return $this->tm->get_results(<<<SQL
-SELECT `room_id`, `date`, `start_time`, `end_time`
+SELECT `room_id`, `room_types`.`meta_value` AS room_type, `date`, `start_time`, `end_time`
 FROM {$this->roomReservationTable->getPrefixedName()}
+JOIN (
+        SELECT post_id, meta_value FROM {$postMetaTable}
+        WHERE meta_key = 'room_type'
+    ) room_types ON {$this->roomReservationTable->getPrefixedName()}.room_id = room_types.post_id
 WHERE event_id = %d;
 SQL
             , [$eventId]);

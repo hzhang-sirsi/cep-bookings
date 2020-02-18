@@ -47,14 +47,15 @@
             (async function () {
                 let root = document.getElementById(fieldIds.results);
 
-                const [eventDate, startTime, endTime] = [
+                const [roomType, eventDate, startTime, endTime] = [
+                    $('#' + fieldIds.roomType).val(),
                     $('#' + fieldIds.eventDate).val(),
                     $('#' + fieldIds.startTime).val(),
                     $('#' + fieldIds.endTime).val()
                 ];
 
                 makeRequest('cb_room_search', {
-                    roomType: $('#' + fieldIds.roomType).val(),
+                    roomType: roomType,
                     eventId: params.postId,
                     eventDate: eventDate,
                     startTime: startTime,
@@ -105,8 +106,7 @@
                             container.classList.add('timeline-group-container');
                             if (group.available !== true) {
                                 container.classList.add('timeline-group-disabled');
-                            }
-                            else {
+                            } else {
                                 container.addEventListener('click', (e) => {
                                     root.querySelectorAll('.timeline-group-selected').forEach((e) => {
                                         e.classList.remove('timeline-group-selected');
@@ -177,8 +177,15 @@
         updateValue(selected);
 
         $('#' + fieldIds.content).on($.modal.BEFORE_OPEN, function (event, modal) {
-            let [eventDate, startTime, endTime] = [$('#' + fieldIds.eventDate), $('#' + fieldIds.startTime), $('#' + fieldIds.endTime)];
+            let [roomTypeElem, eventDate, startTime, endTime] = [
+                $('#' + fieldIds.roomType),
+                $('#' + fieldIds.eventDate),
+                $('#' + fieldIds.startTime),
+                $('#' + fieldIds.endTime)
+            ];
+
             if (selected !== null) {
+                roomTypeElem.val(selected.roomType);
                 eventDate.val(selected.date);
                 startTime.val(selected.startTime);
                 endTime.val(selected.endTime);

@@ -65,6 +65,7 @@ class EquipmentPicker extends Input
         $this->wordpress->wp_enqueue_script('jquery-modal-js');
         $this->wordpress->wp_enqueue_style('jquery-timepicker-css');
         $this->wordpress->wp_enqueue_script('jquery-timepicker-js');
+        $this->wordpress->wp_enqueue_script('font-awesome');
         $this->wordpress->wp_enqueue_style('equipment-picker-css', $this->wordpress->plugins_url('/static/css/equipment-picker.css'));
 
         $startTimeFieldId = $fieldId . '-start-time';
